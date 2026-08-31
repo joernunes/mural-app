@@ -5,6 +5,7 @@
   "description": "Mural aberto — todos escrevem, todos leem, todos veem quem leu.",
   "dependencies": {
     "@vercel/kv": "^1.0.1",
+    "@vercel/og": "^1.0.2",
     "ioredis": "^6.0.0"
   }
 }

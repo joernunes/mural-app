@@ -85,7 +85,8 @@
     box-shadow: 6px 8px 0 rgba(0,0,0,0.35);
     opacity:0; transform: translateY(24px) rotate(0deg);
     animation: settle 0.7s ease-out forwards;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
   }
   .floater:hover{ transform: translateY(-4px) rotate(var(--rot)) scale(1.05); z-index:5; }
   .floater span.tag{ display:block; font-size:0.7rem; opacity:0.55; margin-top:10px; }
@@ -157,7 +158,7 @@
   .see-more-wrap{ text-align:center; margin-top:30px; }
 
   /* --- Note modal --- */
-  .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:50; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   .modal-backdrop.open{ display:flex; }
   .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; animation: modalIn 0.3s ease-out; }
   @keyframes modalIn{ from{ opacity:0; transform: scale(0.92) translateY(16px); } to{ opacity:1; transform: scale(1) translateY(0); } }
@@ -306,6 +307,13 @@
   @media (max-width: 860px){
     .hero-grid{ grid-template-columns: 1fr; }
     .floaters{ height: 260px; margin-top:20px; }
+    .floater, .sticky, .gallery-card {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 2px 4px rgba(0,0,0,0.15) !important;
+    }
+    .gallery-card:hover {
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35) !important;
+    }
+    .gallery-card .gc-share { opacity: 0.85; }
     .feat-grid, .steps, .cases-grid, .pricing-grid{ grid-template-columns: 1fr; }
     .steps::before{ display:none; }
     section{ padding: 64px 0; }
@@ -839,7 +847,9 @@
         if(!floaters[i]) return;
         const truncated = note.text.length > 60 ? note.text.slice(0,57) + '…' : note.text;
         floaters[i].style.background = uniqueColorForNote(note.id);
+        floaters[i].style.cursor = 'pointer';
         floaters[i].innerHTML = `${escapeHtml(truncated)}<span class="tag">— ${escapeHtml(note.author || 'anónimo')}</span>`;
+        floaters[i].onclick = () => openNote(note.id);
       });
     }catch(e){ /* silently keep defaults */ }
   }
