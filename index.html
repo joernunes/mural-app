@@ -534,8 +534,21 @@
   // --- Utilities ---
   function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
   function rotationFor(id){ let h=0; for(let i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))%1000; } return ((h%7)-3); }
-  function colorFor(index){ return STICKY_COLORS[index % STICKY_COLORS.length]; }
-  function galleryColorFor(index){ return GALLERY_COLORS[index % GALLERY_COLORS.length]; }
+  function hueFromId(id){
+    let hash = 0;
+    for(let i=0; i<(id||'').length; i++){
+      hash = ((hash << 5) - hash) + id.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return Math.abs(hash) % 360;
+  }
+  function uniqueColorForNote(id){
+    const hue = hueFromId(id);
+    return `hsl(${hue}, 80%, 72%)`;
+  }
+  function getShareUrl(noteId){
+    return window.location.origin + '/api/nota/' + noteId;
+  }
   function loadViewerName(){ return localStorage.getItem(NAME_KEY); }
   function saveViewerName(name){ try{ localStorage.setItem(NAME_KEY, name); }catch(e){} }
 
@@ -619,10 +632,10 @@
     const sorted = [...notes].sort((a,b) => b.ts - a.ts);
     notesWrap.innerHTML = '';
     const preview = sorted.slice(0, 8);
-    preview.forEach((note, idx) => {
+    preview.forEach((note) => {
       const btn = document.createElement('button');
       btn.className = 'sticky';
-      btn.style.background = colorFor(idx);
+      btn.style.background = uniqueColorForNote(note.id);
       btn.style.transform = `rotate(${rotationFor(note.id)}deg)`;
       btn.innerHTML = `<span class="quote">${escapeHtml(note.text)}</span>
         <span class="meta"><span>${escapeHtml(note.author || 'anónimo')}</span><span>${(note.readers||[]).length} leitura(s)</span></span>`;
@@ -652,7 +665,7 @@
     setHash(id);
 
     // Reset share button
-    modalShare.textContent = '🔗 copiar link';
+    modalShare.textContent = '🔗 copiar link com imagem';
     modalShare.classList.remove('copied');
 
     if(!skipRead){
@@ -682,12 +695,12 @@
   // Share note
   modalShare.addEventListener('click', () => {
     if(!currentNoteId) return;
-    const url = window.location.origin + window.location.pathname + '#nota/' + currentNoteId;
+    const url = getShareUrl(currentNoteId);
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(url).then(() => {
         modalShare.innerHTML = '✓ link copiado!';
         modalShare.classList.add('copied');
-        showToast('link copiado para a clipboard ✓');
+        showToast('link com preview de imagem copiado ✓');
       }).catch(() => {
         fallbackCopy(url);
       });
@@ -739,13 +752,13 @@
       totalReaders += (note.readers || []).length;
       const card = document.createElement('div');
       card.className = 'gallery-card';
-      card.style.background = galleryColorFor(idx);
+      card.style.background = uniqueColorForNote(note.id);
       const rot = rotationFor(note.id);
       card.style.setProperty('--card-rot', rot + 'deg');
       card.style.animationDelay = (idx * 0.04) + 's';
 
       card.innerHTML = `
-        <button class="gc-share" title="copiar link desta nota">🔗</button>
+        <button class="gc-share" title="copiar link com preview de imagem">🔗</button>
         <div class="gc-text">${escapeHtml(note.text)}</div>
         <div class="gc-footer">
           <span>${escapeHtml(note.author || 'anónimo')}</span>
@@ -763,10 +776,10 @@
       const shareBtn = card.querySelector('.gc-share');
       shareBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const url = window.location.origin + window.location.pathname + '#nota/' + note.id;
+        const url = getShareUrl(note.id);
         if(navigator.clipboard && navigator.clipboard.writeText){
           navigator.clipboard.writeText(url).then(() => {
-            showToast('link copiado para a clipboard ✓');
+            showToast('link com preview de imagem copiado ✓');
           });
         } else {
           fallbackCopy(url);
@@ -825,6 +838,7 @@
       pick.forEach((note, i) => {
         if(!floaters[i]) return;
         const truncated = note.text.length > 60 ? note.text.slice(0,57) + '…' : note.text;
+        floaters[i].style.background = uniqueColorForNote(note.id);
         floaters[i].innerHTML = `${escapeHtml(truncated)}<span class="tag">— ${escapeHtml(note.author || 'anónimo')}</span>`;
       });
     }catch(e){ /* silently keep defaults */ }

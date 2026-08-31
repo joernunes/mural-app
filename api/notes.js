@@ -1,39 +1,7 @@
-import { kv } from '@vercel/kv';
-import Redis from 'ioredis';
+import { getDb, NOTES_KEY } from './_db.js';
 
-const NOTES_KEY = 'mural-notes';
 const MAX_TEXT = 500;
 const MAX_NAME = 40;
-
-let redisClient = null;
-
-function getDb() {
-  if (process.env.REDIS_URL) {
-    if (!redisClient) {
-      redisClient = new Redis(process.env.REDIS_URL, {
-        maxRetriesPerRequest: 3,
-        connectTimeout: 5000,
-      });
-    }
-    return {
-      get: async (key) => {
-        const val = await redisClient.get(key);
-        if (!val) return null;
-        try {
-          return typeof val === 'string' ? JSON.parse(val) : val;
-        } catch {
-          return val;
-        }
-      },
-      set: async (key, val) => {
-        const strVal = typeof val === 'object' ? JSON.stringify(val) : val;
-        return redisClient.set(key, strVal);
-      }
-    };
-  }
-
-  return kv;
-}
 
 export default async function handler(req, res) {
   try {
@@ -87,4 +55,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'erro no servidor: ' + (err.message || err) });
   }
 }
-
