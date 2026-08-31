@@ -686,7 +686,11 @@
   function closeModal(){
     modalBackdrop.classList.remove('open');
     currentNoteId = null;
-    setHash(null);
+    if(galleryOverlay.classList.contains('open')){
+      history.replaceState(null, '', '#galeria');
+    } else {
+      setHash(null);
+    }
   }
 
   function renderReaders(note){
@@ -726,16 +730,25 @@
   modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
 
   // --- Gallery ---
-  function openGallery(){
+  async function openGallery(skipHashUpdate){
+    if(!skipHashUpdate && window.location.hash !== '#galeria'){
+      window.location.hash = '#galeria';
+    }
     galleryOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     gallerySearch.value = '';
+    if(!notes || !notes.length){
+      notes = await loadNotes();
+    }
     renderGallery(notes);
   }
 
   function closeGallery(){
     galleryOverlay.classList.remove('open');
     document.body.style.overflow = '';
+    if(window.location.hash === '#galeria'){
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
   }
 
   function renderGallery(data){
@@ -858,6 +871,11 @@
   }
 
   async function handleDeepLink(){
+    const hash = window.location.hash;
+    if(hash === '#galeria'){
+      await openGallery(true);
+      return;
+    }
     const noteId = getHashNoteId();
     if(!noteId) return;
 
@@ -936,11 +954,17 @@
 
   // Handle hash changes (browser back/forward)
   window.addEventListener('hashchange', () => {
-    const noteId = getHashNoteId();
-    if(noteId){
-      openNote(noteId, true);
+    const hash = window.location.hash;
+    if(hash === '#galeria'){
+      openGallery(true);
     } else {
-      closeModal();
+      const noteId = getHashNoteId();
+      if(noteId){
+        openNote(noteId, true);
+      } else {
+        closeModal();
+        closeGallery();
+      }
     }
   });
 })();
