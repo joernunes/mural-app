@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mural — escreve. deixa. alguém vai encontrar.</title>
+<meta name="description" content="Mural é o teu espaço público de notas: crias um mural, partilhas o link, e qualquer pessoa pode escrever, ler e ver quem já passou por ali.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -84,7 +85,9 @@
     box-shadow: 6px 8px 0 rgba(0,0,0,0.35);
     opacity:0; transform: translateY(24px) rotate(0deg);
     animation: settle 0.7s ease-out forwards;
+    transition: transform 0.3s ease;
   }
+  .floater:hover{ transform: translateY(-4px) rotate(var(--rot)) scale(1.05); z-index:5; }
   .floater span.tag{ display:block; font-size:0.7rem; opacity:0.55; margin-top:10px; }
   @keyframes settle{ to{ opacity:1; transform: translateY(0) rotate(var(--rot)); } }
   .f1{ background: var(--lime); top: 6%; left: 6%; --rot: -6deg; animation-delay:0.15s; }
@@ -150,15 +153,126 @@
   .sticky .meta{ font-family:'IBM Plex Mono', monospace; font-size:0.7rem; opacity:0.65; margin-top:12px; display:flex; justify-content:space-between; }
   .empty-note{ font-family:'IBM Plex Mono', monospace; color: var(--muted-invert); font-size:0.9rem; }
 
-  .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:50; }
+  /* --- "ver mais" button below demo notes --- */
+  .see-more-wrap{ text-align:center; margin-top:30px; }
+
+  /* --- Note modal --- */
+  .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:50; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   .modal-backdrop.open{ display:flex; }
-  .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; }
+  .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; animation: modalIn 0.3s ease-out; }
+  @keyframes modalIn{ from{ opacity:0; transform: scale(0.92) translateY(16px); } to{ opacity:1; transform: scale(1) translateY(0); } }
   .modal-close{ position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.6rem; color: var(--muted-invert); cursor:pointer; line-height:1; }
   .modal .quote-full{ font-size:1.15rem; white-space:pre-wrap; margin-bottom:22px; }
   .modal .author-line{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--muted-invert); margin-bottom:20px; }
   .modal .readers-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:10px; }
   .modal .readers-list{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--paper-invert); display:flex; flex-wrap:wrap; gap:8px; }
   .modal .readers-list span{ background: rgba(255,255,255,0.08); padding:4px 10px; border-radius:20px; }
+  .modal-actions{ display:flex; gap:12px; margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+  .btn-share{
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem; font-weight:500;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:8px;
+    padding: 8px 16px; color: var(--paper-invert); cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; transition: all 0.2s ease;
+  }
+  .btn-share:hover{ background: rgba(198,241,53,0.15); border-color: var(--lime); color: var(--lime); }
+  .btn-share.copied{ background: rgba(198,241,53,0.2); border-color: var(--lime); color: var(--lime); }
+
+  /* ========== GALLERY OVERLAY ========== */
+  .gallery-overlay{
+    position:fixed; inset:0; z-index:100;
+    background: var(--bg-dark);
+    display:none; flex-direction:column;
+    overflow:hidden;
+  }
+  .gallery-overlay.open{ display:flex; }
+
+  .gallery-header{
+    padding: 20px 32px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--line); flex-shrink:0;
+    background: rgba(23,18,32,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    z-index:5;
+  }
+  .gallery-header-left{ display:flex; align-items:center; gap:24px; }
+  .gallery-title{ font-size:1.3rem; font-weight:700; letter-spacing:-0.02em; }
+  .gallery-stats{
+    display:flex; gap:20px; font-family:'IBM Plex Mono', monospace; font-size:0.82rem;
+    color: var(--muted-invert);
+  }
+  .gallery-stats .stat-val{ color: var(--lime); font-weight:600; font-size:1rem; margin-right:4px; }
+  .gallery-search{
+    font-family:'Space Grotesk', sans-serif; font-size:0.9rem;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:999px;
+    padding: 9px 18px; color: var(--paper-invert); width: 260px;
+    transition: border-color 0.2s;
+  }
+  .gallery-search::placeholder{ color: var(--muted-invert); }
+  .gallery-search:focus{ outline:none; border-color: var(--lime); }
+  .gallery-close-btn{
+    background:none; border:none; color: var(--muted-invert); font-size:1.8rem;
+    cursor:pointer; line-height:1; padding:4px 8px; transition: color 0.2s;
+  }
+  .gallery-close-btn:hover{ color: var(--paper-invert); }
+
+  .gallery-body{
+    flex:1; overflow-y:auto; padding: 36px 32px 80px;
+    scroll-behavior:smooth;
+  }
+  .gallery-body::-webkit-scrollbar{ width:6px; }
+  .gallery-body::-webkit-scrollbar-track{ background:transparent; }
+  .gallery-body::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:3px; }
+
+  .gallery-grid{
+    columns: 4; column-gap: 20px;
+  }
+
+  .gallery-card{
+    break-inside:avoid; margin-bottom: 20px;
+    padding: 22px 20px 26px; border-radius: 10px;
+    color: var(--ink); cursor:pointer; position:relative;
+    font-family:'Space Grotesk', sans-serif;
+    box-shadow: 4px 6px 0 rgba(0,0,0,0.3);
+    opacity:0; transform: translateY(30px) rotate(0deg);
+    animation: cardIn 0.5s ease-out forwards;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    perspective: 600px;
+  }
+  .gallery-card:hover{
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 8px 12px 0 rgba(0,0,0,0.35);
+    z-index:3;
+  }
+  @keyframes cardIn{
+    to{ opacity:1; transform: translateY(0) rotate(var(--card-rot, 0deg)); }
+  }
+
+  .gallery-card .gc-text{
+    font-size:0.95rem; line-height:1.5; margin-bottom:14px;
+    word-break:break-word; white-space:pre-wrap;
+  }
+  .gallery-card .gc-footer{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; opacity:0.6;
+  }
+  .gallery-card .gc-share{
+    position:absolute; top:10px; right:10px; background: rgba(0,0,0,0.15);
+    border:none; border-radius:50%; width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; transition: opacity 0.2s; font-size:0.85rem; color: var(--ink);
+  }
+  .gallery-card:hover .gc-share{ opacity:1; }
+  .gallery-card .gc-share:hover{ background: rgba(0,0,0,0.3); }
+
+  .gallery-empty{
+    text-align:center; padding:80px 20px;
+    font-family:'IBM Plex Mono', monospace; color: var(--muted-invert); font-size:1rem;
+  }
+
+  /* Fade-out at the bottom of gallery scroll */
+  .gallery-body::after{
+    content:''; position:sticky; bottom:0; left:0; right:0;
+    height:80px; display:block; pointer-events:none;
+    background: linear-gradient(transparent, var(--bg-dark));
+  }
 
   .pricing-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 46px; }
   .tier{ border-radius: 14px; padding: 32px 26px; background:#fff; border: 1px solid var(--line-soft); display:flex; flex-direction:column; }
@@ -175,14 +289,39 @@
 
   footer{ background: var(--bg-dark); text-align:center; padding: 40px 0; color: var(--muted-invert); font-family:'IBM Plex Mono', monospace; font-size:0.85rem; border-top:1px solid var(--line); }
 
+  /* Toast notification */
+  .toast{
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+    background: var(--lime); color: var(--ink); font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem; font-weight:600; padding: 12px 24px; border-radius:999px;
+    z-index:200; opacity:0; pointer-events:none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(198,241,53,0.3);
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+
+  @media (max-width: 1100px){
+    .gallery-grid{ columns:3; }
+  }
   @media (max-width: 860px){
     .hero-grid{ grid-template-columns: 1fr; }
     .floaters{ height: 260px; margin-top:20px; }
     .feat-grid, .steps, .cases-grid, .pricing-grid{ grid-template-columns: 1fr; }
     .steps::before{ display:none; }
     section{ padding: 64px 0; }
+    .gallery-grid{ columns:2; }
+    .gallery-header{ padding: 16px 20px; flex-wrap:wrap; gap:12px; }
+    .gallery-search{ width:100%; order:10; }
+    .gallery-body{ padding: 24px 20px 80px; }
   }
-  @media (prefers-reduced-motion: reduce){ .floater{ animation:none; opacity:1; transform: translateY(0) rotate(var(--rot)); } }
+  @media (max-width: 520px){
+    .gallery-grid{ columns:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .floater{ animation:none; opacity:1; transform: translateY(0) rotate(var(--rot)); }
+    .gallery-card{ animation:none; opacity:1; transform:none; }
+    .modal{ animation:none; }
+  }
 </style>
 </head>
 <body>
@@ -206,11 +345,11 @@
         <a href="#demo" class="pill-outline">experimentar agora</a>
       </div>
     </div>
-    <div class="floaters">
-      <div class="floater f1">chegámos primeiro 👋<span class="tag">— Inês</span></div>
-      <div class="floater f2">isto devia existir há mais tempo.<span class="tag">— Tiago</span></div>
-      <div class="floater f3">deixei aqui a minha ideia.<span class="tag">— Marta</span></div>
-      <div class="floater f4">guardado.<span class="tag">— anónimo</span></div>
+    <div class="floaters" id="hero-floaters">
+      <div class="floater f1" id="floater-1">chegámos primeiro 👋<span class="tag">— Inês</span></div>
+      <div class="floater f2" id="floater-2">isto devia existir há mais tempo.<span class="tag">— Tiago</span></div>
+      <div class="floater f3" id="floater-3">deixei aqui a minha ideia.<span class="tag">— Marta</span></div>
+      <div class="floater f4" id="floater-4">guardado.<span class="tag">— anónimo</span></div>
     </div>
   </div>
 </section>
@@ -279,6 +418,11 @@
           <div id="status-msg" class="status-msg"></div>
         </div>
         <div id="notes-wrap" class="notes-wrap"><p class="empty-note">a carregar o mural...</p></div>
+        <div class="see-more-wrap" id="see-more-wrap" style="display:none;">
+          <button id="open-gallery-btn" class="pill-outline" style="gap:8px; display:inline-flex; align-items:center;">
+            explorar todos os murais ↗
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -313,6 +457,7 @@
 
 <footer>um placar aberto para quem ainda gosta de deixar um rasto</footer>
 
+<!-- Note detail modal -->
 <div id="modal-backdrop" class="modal-backdrop">
   <div class="modal">
     <button id="modal-close" class="modal-close">×</button>
@@ -320,18 +465,45 @@
     <div id="modal-author" class="author-line"></div>
     <div class="readers-title">quem já leu:</div>
     <div id="modal-readers" class="readers-list"></div>
+    <div class="modal-actions">
+      <button id="modal-share" class="btn-share">🔗 copiar link</button>
+    </div>
   </div>
 </div>
+
+<!-- Full-screen gallery overlay -->
+<div id="gallery-overlay" class="gallery-overlay">
+  <div class="gallery-header">
+    <div class="gallery-header-left">
+      <span class="gallery-title">mural</span>
+      <div class="gallery-stats">
+        <span><span class="stat-val" id="gallery-count-notes">0</span>notas</span>
+        <span><span class="stat-val" id="gallery-count-readers">0</span>leituras</span>
+      </div>
+    </div>
+    <input id="gallery-search" class="gallery-search" type="text" placeholder="pesquisar notas ou autores...">
+    <button id="gallery-close" class="gallery-close-btn">×</button>
+  </div>
+  <div class="gallery-body" id="gallery-body">
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
 <script>
 (function(){
   const STICKY_COLORS = ['var(--lime)','var(--pink)','var(--sky)','var(--orange)'];
+  const GALLERY_COLORS = ['#c6f135','#ff4fa3','#5ed0f0','#ff8a5b','#f0d05e','#a78bfa','#34d399','#fb923c'];
   const NAME_KEY = 'mural-viewer-name';
   const API = '/api/notes';
 
   let viewerName = null;
   let notes = [];
+  let currentNoteId = null;
 
+  // --- DOM refs ---
   const gate = document.getElementById('gate');
   const muralBody = document.getElementById('mural-body');
   const nameInput = document.getElementById('name-input');
@@ -343,19 +515,67 @@
   const postBtn = document.getElementById('post-note');
   const statusMsg = document.getElementById('status-msg');
   const notesWrap = document.getElementById('notes-wrap');
+  const seeMoreWrap = document.getElementById('see-more-wrap');
+  const openGalleryBtn = document.getElementById('open-gallery-btn');
   const modalBackdrop = document.getElementById('modal-backdrop');
   const modalQuote = document.getElementById('modal-quote');
   const modalAuthor = document.getElementById('modal-author');
   const modalReaders = document.getElementById('modal-readers');
   const modalClose = document.getElementById('modal-close');
+  const modalShare = document.getElementById('modal-share');
+  const galleryOverlay = document.getElementById('gallery-overlay');
+  const galleryGrid = document.getElementById('gallery-grid');
+  const galleryClose = document.getElementById('gallery-close');
+  const gallerySearch = document.getElementById('gallery-search');
+  const galleryCountNotes = document.getElementById('gallery-count-notes');
+  const galleryCountReaders = document.getElementById('gallery-count-readers');
+  const toast = document.getElementById('toast');
 
+  // --- Utilities ---
   function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
   function rotationFor(id){ let h=0; for(let i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))%1000; } return ((h%7)-3); }
   function colorFor(index){ return STICKY_COLORS[index % STICKY_COLORS.length]; }
-
+  function galleryColorFor(index){ return GALLERY_COLORS[index % GALLERY_COLORS.length]; }
   function loadViewerName(){ return localStorage.getItem(NAME_KEY); }
   function saveViewerName(name){ try{ localStorage.setItem(NAME_KEY, name); }catch(e){} }
 
+  function showToast(msg, duration){
+    duration = duration || 2500;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.classList.remove('show'); }, duration);
+  }
+
+  function timeAgo(ts){
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if(mins < 1) return 'agora mesmo';
+    if(mins < 60) return `há ${mins}min`;
+    const hours = Math.floor(mins / 60);
+    if(hours < 24) return `há ${hours}h`;
+    const days = Math.floor(hours / 24);
+    if(days < 30) return `há ${days}d`;
+    return `há ${Math.floor(days/30)}mês(es)`;
+  }
+
+  // --- Animated counter ---
+  function animateCounter(el, target){
+    const duration = 800;
+    const start = parseInt(el.textContent) || 0;
+    if(start === target) return;
+    const startTime = performance.now();
+    function tick(now){
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + (target - start) * eased);
+      if(progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // --- API ---
   async function loadNotes(){
     try{
       const res = await fetch(API);
@@ -384,18 +604,22 @@
     }catch(e){ console.error(e); }
   }
 
+  // --- Render demo notes ---
   function renderNotes(){
     if(notes === null){
       notesWrap.innerHTML = '<p class="empty-note">não consegui ligar ao mural — verifica se a base de dados KV está ligada ao projeto na Vercel.</p>';
+      seeMoreWrap.style.display = 'none';
       return;
     }
     if(!notes.length){
       notesWrap.innerHTML = '<p class="empty-note">ainda ninguém escreveu nada — sê a primeira pessoa.</p>';
+      seeMoreWrap.style.display = 'none';
       return;
     }
     const sorted = [...notes].sort((a,b) => b.ts - a.ts);
     notesWrap.innerHTML = '';
-    sorted.forEach((note, idx) => {
+    const preview = sorted.slice(0, 8);
+    preview.forEach((note, idx) => {
       const btn = document.createElement('button');
       btn.className = 'sticky';
       btn.style.background = colorFor(idx);
@@ -405,24 +629,48 @@
       btn.addEventListener('click', () => openNote(note.id));
       notesWrap.appendChild(btn);
     });
+    seeMoreWrap.style.display = sorted.length > 0 ? 'block' : 'none';
   }
 
-  async function openNote(id){
+  // --- Note modal ---
+  function setHash(noteId){
+    if(noteId){
+      history.replaceState(null, '', '#nota/' + noteId);
+    } else {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+
+  async function openNote(id, skipRead){
     const note = notes.find(n => n.id === id);
     if(!note) return;
+    currentNoteId = id;
     modalQuote.textContent = note.text;
-    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'}`;
+    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'} · ${timeAgo(note.ts)}`;
     modalBackdrop.classList.add('open');
     renderReaders(note);
+    setHash(id);
 
-    const readerName = viewerName || 'anónimo';
-    note.readers = note.readers || [];
-    if(!note.readers.includes(readerName)){
-      note.readers.push(readerName);
-      renderReaders(note);
-      renderNotes();
-      await markRead(id, readerName);
+    // Reset share button
+    modalShare.textContent = '🔗 copiar link';
+    modalShare.classList.remove('copied');
+
+    if(!skipRead){
+      const readerName = viewerName || 'anónimo';
+      note.readers = note.readers || [];
+      if(!note.readers.includes(readerName)){
+        note.readers.push(readerName);
+        renderReaders(note);
+        renderNotes();
+        await markRead(id, readerName);
+      }
     }
+  }
+
+  function closeModal(){
+    modalBackdrop.classList.remove('open');
+    currentNoteId = null;
+    setHash(null);
   }
 
   function renderReaders(note){
@@ -431,9 +679,184 @@
     modalReaders.innerHTML = readers.map(r => `<span>${escapeHtml(r)}</span>`).join('');
   }
 
-  modalClose.addEventListener('click', () => modalBackdrop.classList.remove('open'));
-  modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) modalBackdrop.classList.remove('open'); });
+  // Share note
+  modalShare.addEventListener('click', () => {
+    if(!currentNoteId) return;
+    const url = window.location.origin + window.location.pathname + '#nota/' + currentNoteId;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(() => {
+        modalShare.innerHTML = '✓ link copiado!';
+        modalShare.classList.add('copied');
+        showToast('link copiado para a clipboard ✓');
+      }).catch(() => {
+        fallbackCopy(url);
+      });
+    } else {
+      fallbackCopy(url);
+    }
+  });
 
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); showToast('link copiado ✓'); }catch(e){}
+    document.body.removeChild(ta);
+    modalShare.innerHTML = '✓ link copiado!';
+    modalShare.classList.add('copied');
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
+
+  // --- Gallery ---
+  function openGallery(){
+    galleryOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    gallerySearch.value = '';
+    renderGallery(notes);
+    gallerySearch.focus();
+  }
+
+  function closeGallery(){
+    galleryOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderGallery(data){
+    if(!data || !data.length){
+      galleryGrid.innerHTML = '<div class="gallery-empty">nenhuma nota encontrada.</div>';
+      animateCounter(galleryCountNotes, 0);
+      animateCounter(galleryCountReaders, 0);
+      return;
+    }
+
+    const sorted = [...data].sort((a,b) => b.ts - a.ts);
+    galleryGrid.innerHTML = '';
+
+    let totalReaders = 0;
+    sorted.forEach((note, idx) => {
+      totalReaders += (note.readers || []).length;
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+      card.style.background = galleryColorFor(idx);
+      const rot = rotationFor(note.id);
+      card.style.setProperty('--card-rot', rot + 'deg');
+      card.style.animationDelay = (idx * 0.04) + 's';
+
+      card.innerHTML = `
+        <button class="gc-share" title="copiar link desta nota">🔗</button>
+        <div class="gc-text">${escapeHtml(note.text)}</div>
+        <div class="gc-footer">
+          <span>${escapeHtml(note.author || 'anónimo')}</span>
+          <span>${(note.readers||[]).length} leitura(s) · ${timeAgo(note.ts)}</span>
+        </div>
+      `;
+
+      // Click card → open modal
+      card.addEventListener('click', (e) => {
+        if(e.target.closest('.gc-share')) return;
+        openNote(note.id);
+      });
+
+      // Share button on card
+      const shareBtn = card.querySelector('.gc-share');
+      shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = window.location.origin + window.location.pathname + '#nota/' + note.id;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(url).then(() => {
+            showToast('link copiado para a clipboard ✓');
+          });
+        } else {
+          fallbackCopy(url);
+        }
+      });
+
+      galleryGrid.appendChild(card);
+    });
+
+    animateCounter(galleryCountNotes, sorted.length);
+    animateCounter(galleryCountReaders, totalReaders);
+  }
+
+  // Gallery search
+  gallerySearch.addEventListener('input', () => {
+    const q = gallerySearch.value.trim().toLowerCase();
+    if(!q){
+      renderGallery(notes);
+      return;
+    }
+    const filtered = notes.filter(n =>
+      (n.text || '').toLowerCase().includes(q) ||
+      (n.author || '').toLowerCase().includes(q)
+    );
+    renderGallery(filtered);
+  });
+
+  openGalleryBtn.addEventListener('click', openGallery);
+  galleryClose.addEventListener('click', closeGallery);
+
+  // Escape key closes gallery or modal
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      if(modalBackdrop.classList.contains('open')){
+        closeModal();
+      } else if(galleryOverlay.classList.contains('open')){
+        closeGallery();
+      }
+    }
+  });
+
+  // --- Hero dynamic floaters ---
+  async function populateHeroFloaters(){
+    try{
+      const heroNotes = await loadNotes();
+      if(!heroNotes || heroNotes.length < 1) return;
+
+      const sorted = [...heroNotes].sort((a,b) => b.ts - a.ts);
+      const pick = sorted.slice(0, 4);
+      const floaters = [
+        document.getElementById('floater-1'),
+        document.getElementById('floater-2'),
+        document.getElementById('floater-3'),
+        document.getElementById('floater-4'),
+      ];
+      pick.forEach((note, i) => {
+        if(!floaters[i]) return;
+        const truncated = note.text.length > 60 ? note.text.slice(0,57) + '…' : note.text;
+        floaters[i].innerHTML = `${escapeHtml(truncated)}<span class="tag">— ${escapeHtml(note.author || 'anónimo')}</span>`;
+      });
+    }catch(e){ /* silently keep defaults */ }
+  }
+
+  // --- Deep-link handling ---
+  function getHashNoteId(){
+    const hash = window.location.hash;
+    if(hash.startsWith('#nota/')){
+      return hash.slice(6);
+    }
+    return null;
+  }
+
+  async function handleDeepLink(){
+    const noteId = getHashNoteId();
+    if(!noteId) return;
+
+    // Make sure notes are loaded
+    if(!notes || !notes.length){
+      notes = await loadNotes();
+    }
+    if(!notes) return;
+
+    const note = notes.find(n => n.id === noteId);
+    if(note){
+      // Open directly without asking for name (frictionless read)
+      openNote(noteId, true);
+    }
+  }
+
+  // --- Mural entry ---
   async function enterMural(name){
     viewerName = name || 'anónimo';
     saveViewerName(viewerName);
@@ -475,10 +898,33 @@
     }
   });
 
-  (function init(){
+  // --- Init ---
+  (async function init(){
+    // Populate hero floaters with real data
+    populateHeroFloaters();
+
+    // Check for saved name
     const saved = loadViewerName();
-    if(saved){ enterMural(saved); }
+    if(saved){
+      await enterMural(saved);
+    } else {
+      // Pre-load notes for deep-link
+      notes = await loadNotes();
+    }
+
+    // Handle deep-link
+    await handleDeepLink();
   })();
+
+  // Handle hash changes (browser back/forward)
+  window.addEventListener('hashchange', () => {
+    const noteId = getHashNoteId();
+    if(noteId){
+      openNote(noteId, true);
+    } else {
+      closeModal();
+    }
+  });
 })();
 </script>
 
