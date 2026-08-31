@@ -18,7 +18,7 @@ KV (Redis) partilhada — é por isso que qualquer visitante vê o mesmo mural.
    git add .
    git commit -m "mural inicial"
    git branch -M main
-   git remote add origin <o-teu-repositorio-github>
+   git remote add origin https://github.com/joernunes/mural-app.git
    git push -u origin main
    ```
 
