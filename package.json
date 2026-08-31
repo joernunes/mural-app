@@ -1,0 +1,9 @@
+{
+  "name": "mural",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mural aberto — todos escrevem, todos leem, todos veem quem leu.",
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  }
+}

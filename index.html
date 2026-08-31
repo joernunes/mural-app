@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mural — escreve. deixa. alguém vai encontrar.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark: #171220;
+    --bg-dark-2: #1f1830;
+    --bg-light: #f7f5f0;
+    --ink: #17131f;
+    --ink-soft: #4a4458;
+    --paper-invert: #f4f1ea;
+    --muted-invert: #b6aec9;
+    --lime: #c6f135;
+    --pink: #ff4fa3;
+    --sky: #5ed0f0;
+    --orange: #ff8a5b;
+    --line: rgba(255,255,255,0.12);
+    --line-soft: rgba(23,19,31,0.12);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Space Grotesk', sans-serif;
+    color: var(--paper-invert);
+    background: var(--bg-dark);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+  img,svg{ display:block; }
+
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:1;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{ max-width: 1080px; margin:0 auto; padding: 0 32px; }
+
+  section{ position:relative; padding: 90px 0; }
+  .section-dark{ background: var(--bg-dark); color: var(--paper-invert); }
+  .section-dark-2{ background: var(--bg-dark-2); color: var(--paper-invert); }
+  .section-light{ background: var(--bg-light); color: var(--ink); }
+
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; font-weight:700; letter-spacing:-0.01em; }
+  .kicker{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; letter-spacing:0.02em; color: var(--lime); margin-bottom:16px; display:block; }
+  .section-light .kicker{ color:#a0782f; }
+
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding: 26px 0; position:relative; z-index:3; }
+  .logo{ font-weight:700; font-size:1.2rem; letter-spacing:-0.02em; }
+  .pill{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.95rem;
+    background: var(--lime); color: var(--ink); padding: 11px 24px; border-radius: 999px;
+    text-decoration:none; display:inline-block; border:none; cursor:pointer;
+    transition: transform 0.15s ease;
+  }
+  .pill:hover{ transform: translateY(-2px); }
+  .pill:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  .pill-outline{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.95rem;
+    background: transparent; color: var(--paper-invert); padding: 10px 22px; border-radius:999px;
+    border: 1.5px solid var(--line); text-decoration:none; display:inline-block; cursor:pointer;
+  }
+  .section-light .pill-outline{ color: var(--ink); border-color: var(--line-soft); }
+
+  .hero{ padding-top: 40px; padding-bottom: 130px; overflow:hidden; }
+  .hero-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items:center; position:relative; z-index:2; }
+  .hero h1{ font-size: clamp(2.6rem, 5.2vw, 4rem); line-height:1.08; max-width:12ch; }
+  .hero .lede{ font-size:1.1rem; color: var(--muted-invert); max-width:42ch; margin-top:24px; }
+  .hero-cta{ margin-top:38px; display:flex; gap:16px; flex-wrap:wrap; }
+
+  .floaters{ position:relative; height: 420px; }
+  .floater{
+    position:absolute; width: 168px; padding:18px 18px 22px; border-radius:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color: var(--ink);
+    box-shadow: 6px 8px 0 rgba(0,0,0,0.35);
+    opacity:0; transform: translateY(24px) rotate(0deg);
+    animation: settle 0.7s ease-out forwards;
+  }
+  .floater span.tag{ display:block; font-size:0.7rem; opacity:0.55; margin-top:10px; }
+  @keyframes settle{ to{ opacity:1; transform: translateY(0) rotate(var(--rot)); } }
+  .f1{ background: var(--lime); top: 6%; left: 6%; --rot: -6deg; animation-delay:0.15s; }
+  .f2{ background: var(--pink); color:#2a0d1c; top: 40%; left: 46%; --rot: 4deg; animation-delay:0.4s; }
+  .f3{ background: var(--sky); top: 66%; left: 4%; --rot: -3deg; animation-delay:0.65s; }
+  .f4{ background: var(--orange); top: 8%; left: 60%; --rot: 5deg; animation-delay:0.9s; width:140px; }
+
+  .feat-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+  .feat-card{ padding: 30px 26px; background: #fff; border: 1px solid var(--line-soft); border-radius: 10px; }
+  .chip{ width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:20px; }
+  .chip.c1{ background: var(--lime); }
+  .chip.c2{ background: var(--pink); }
+  .chip.c3{ background: var(--sky); }
+  .feat-card h3{ font-size:1.2rem; margin-bottom:8px; }
+  .feat-card p{ color: var(--ink-soft); font-size:0.95rem; }
+
+  .steps{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; position:relative; }
+  .steps::before{ content:""; position:absolute; top:23px; left:8%; right:8%; height:1px; background: var(--line); z-index:0; }
+  .step{ position:relative; z-index:1; }
+  .step .dot{ width:46px; height:46px; border-radius:50%; border:2px solid var(--lime); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:1rem; background: var(--bg-dark-2); margin-bottom:22px; }
+  .step h3{ font-size:1.15rem; margin-bottom:8px; }
+  .step p{ color: var(--muted-invert); font-size:0.92rem; max-width:32ch; }
+
+  .cases-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 46px; }
+  .case{ padding: 24px 26px; background:#fff; border-radius:10px; border-top:4px solid var(--sky); }
+  .case:nth-child(2){ border-top-color: var(--pink); }
+  .case:nth-child(3){ border-top-color: var(--orange); }
+  .case:nth-child(4){ border-top-color: var(--lime); }
+  .case h3{ font-size:1.05rem; margin-bottom:6px; }
+  .case p{ color: var(--ink-soft); font-size:0.9rem; }
+
+  #demo .lede{ color: var(--muted-invert); max-width:56ch; margin-top:14px; margin-bottom:40px; font-size:1rem;}
+  .demo-frame{ background: var(--bg-dark-2); border:1px solid var(--line); border-radius:14px; padding:34px; }
+
+  .gate{ background: rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:10px; padding: 26px 28px; max-width: 440px; }
+  .gate p{ color: var(--muted-invert); margin-bottom:14px; font-size:0.92rem; }
+  .gate label{ display:block; font-size:0.95rem; margin-bottom:8px; font-weight:600; }
+  .field{
+    width:100%; font-family:'Space Grotesk', sans-serif; font-size:1rem;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:8px;
+    padding: 11px 14px; color: var(--paper-invert);
+  }
+  .field::placeholder{ color: var(--muted-invert); }
+  .field:focus{ outline:2px solid var(--lime); outline-offset:1px; }
+  .gate .row{ display:flex; gap:14px; margin-top:16px; align-items:center; flex-wrap:wrap; }
+
+  .composer{ margin-bottom: 34px; }
+  .composer textarea.field{ min-height: 100px; resize: vertical; font-size:1rem; }
+  .composer .row{ display:flex; gap:14px; margin-top:14px; align-items:center; flex-wrap:wrap; }
+  .composer .who{ color: var(--muted-invert); font-size:0.9rem; }
+  .composer .who button{ background:none; border:none; text-decoration:underline; color: var(--lime); cursor:pointer; font-family:'IBM Plex Mono', monospace; font-size:0.82rem; }
+  .status-msg{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--pink); margin-top:10px; min-height:1.2em; }
+
+  .notes-wrap{ display:flex; gap: 22px; flex-wrap:wrap; padding-top: 6px; }
+  .sticky{
+    font-family:'Space Grotesk', sans-serif; font-size:0.98rem; width: 200px; min-height: 150px;
+    padding: 18px 17px; color: var(--ink); box-shadow: 5px 6px 0 rgba(0,0,0,0.3);
+    border-radius:6px; position:relative; cursor:pointer; border:none; text-align:left;
+    display:flex; flex-direction:column; justify-content:space-between; transition: transform 0.15s ease;
+  }
+  .sticky:hover{ transform: translateY(-3px) rotate(0deg) !important; }
+  .sticky .quote{ display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+  .sticky .meta{ font-family:'IBM Plex Mono', monospace; font-size:0.7rem; opacity:0.65; margin-top:12px; display:flex; justify-content:space-between; }
+  .empty-note{ font-family:'IBM Plex Mono', monospace; color: var(--muted-invert); font-size:0.9rem; }
+
+  .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:50; }
+  .modal-backdrop.open{ display:flex; }
+  .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; }
+  .modal-close{ position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.6rem; color: var(--muted-invert); cursor:pointer; line-height:1; }
+  .modal .quote-full{ font-size:1.15rem; white-space:pre-wrap; margin-bottom:22px; }
+  .modal .author-line{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--muted-invert); margin-bottom:20px; }
+  .modal .readers-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:10px; }
+  .modal .readers-list{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--paper-invert); display:flex; flex-wrap:wrap; gap:8px; }
+  .modal .readers-list span{ background: rgba(255,255,255,0.08); padding:4px 10px; border-radius:20px; }
+
+  .pricing-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 46px; }
+  .tier{ border-radius: 14px; padding: 32px 26px; background:#fff; border: 1px solid var(--line-soft); display:flex; flex-direction:column; }
+  .tier.featured{ background: var(--ink); color: var(--paper-invert); border-color: var(--lime); box-shadow: 0 0 0 2px var(--lime); position:relative; }
+  .tier.featured .tier-price span, .tier.featured li{ color: var(--muted-invert); }
+  .tier.featured::before{ content:"mais escolhido"; position:absolute; top:-13px; left:26px; background: var(--lime); color: var(--ink); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; padding: 4px 12px; border-radius:20px; }
+  .tier h3{ font-size:1.2rem; margin-bottom: 4px; }
+  .tier .tier-price{ font-size:2rem; font-weight:700; margin: 12px 0 20px; }
+  .tier .tier-price span{ font-size:0.9rem; font-family:'IBM Plex Mono', monospace; color: var(--ink-soft); font-weight:400; }
+  .tier ul{ list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom: 26px; flex-grow:1; }
+  .tier li{ color: var(--ink-soft); font-size:0.9rem; padding-left: 22px; position:relative; }
+  .tier li::before{ content:"+"; position:absolute; left:0; font-weight:700; color: var(--pink); }
+  .tier.featured li::before{ color: var(--lime); }
+
+  footer{ background: var(--bg-dark); text-align:center; padding: 40px 0; color: var(--muted-invert); font-family:'IBM Plex Mono', monospace; font-size:0.85rem; border-top:1px solid var(--line); }
+
+  @media (max-width: 860px){
+    .hero-grid{ grid-template-columns: 1fr; }
+    .floaters{ height: 260px; margin-top:20px; }
+    .feat-grid, .steps, .cases-grid, .pricing-grid{ grid-template-columns: 1fr; }
+    .steps::before{ display:none; }
+    section{ padding: 64px 0; }
+  }
+  @media (prefers-reduced-motion: reduce){ .floater{ animation:none; opacity:1; transform: translateY(0) rotate(var(--rot)); } }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="section-dark">
+  <div class="wrap nav">
+    <span class="logo">mural</span>
+    <a href="#precos" class="pill">criar mural</a>
+  </div>
+</div>
+
+<section class="section-dark hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">um mural, aberto a todos</span>
+      <h1>escreve algo. deixa aqui. alguém vai encontrar.</h1>
+      <p class="lede">Mural é o teu espaço público de notas: crias um mural, partilhas o link, e qualquer pessoa pode escrever, ler o que já lá está — e ver exatamente quem já passou por ali.</p>
+      <div class="hero-cta">
+        <a href="#precos" class="pill">Criar o meu mural — grátis</a>
+        <a href="#demo" class="pill-outline">experimentar agora</a>
+      </div>
+    </div>
+    <div class="floaters">
+      <div class="floater f1">chegámos primeiro 👋<span class="tag">— Inês</span></div>
+      <div class="floater f2">isto devia existir há mais tempo.<span class="tag">— Tiago</span></div>
+      <div class="floater f3">deixei aqui a minha ideia.<span class="tag">— Marta</span></div>
+      <div class="floater f4">guardado.<span class="tag">— anónimo</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-light" id="sobre">
+  <div class="wrap">
+    <span class="kicker">o que torna isto diferente</span>
+    <h2 style="font-size:2rem;">um placar, não uma caixa de entrada</h2>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="chip c1">✎</div><h3>Qualquer pessoa escreve</h3><p>Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.</p></div>
+      <div class="feat-card"><div class="chip c2">👁</div><h3>Todas as notas ficam abertas</h3><p>Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.</p></div>
+      <div class="feat-card"><div class="chip c3">✓</div><h3>Vês quem já leu</h3><p>Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark-2" id="como">
+  <div class="wrap">
+    <span class="kicker">como funciona</span>
+    <h2 style="font-size:2rem;">três passos, sem fricção</h2>
+    <div class="steps">
+      <div class="step"><div class="dot">1</div><h3>Cria o teu mural</h3><p>Escolhe um nome, recebe um link único. Menos de um minuto, sem cartão de crédito.</p></div>
+      <div class="step"><div class="dot">2</div><h3>Partilha o link</h3><p>Numa rede social, num grupo, numa sala de aula, num evento ao vivo.</p></div>
+      <div class="step"><div class="dot">3</div><h3>Deixa acontecer</h3><p>As pessoas escrevem, leem, voltam para ver quem passou. Tu só acompanhas.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-light" id="casos">
+  <div class="wrap">
+    <span class="kicker">onde isto funciona bem</span>
+    <h2 style="font-size:2rem;">feito para momentos, não para arquivos</h2>
+    <div class="cases-grid">
+      <div class="case"><h3>Turmas e workshops</h3><p>Um mural por sessão para dúvidas, reflexões ou feedback anónimo em tempo real.</p></div>
+      <div class="case"><h3>Casamentos e eventos</h3><p>Um livro de visitas digital que os convidados escrevem do telemóvel, sem apps.</p></div>
+      <div class="case"><h3>Lançamentos de produto</h3><p>Recolhe reações abertas do público logo no dia do lançamento.</p></div>
+      <div class="case"><h3>Comunidades online</h3><p>Um espaço partilhado onde qualquer membro deixa uma ideia para os outros lerem.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark-2" id="demo">
+  <div class="wrap">
+    <span class="kicker">experimenta agora mesmo</span>
+    <h2 style="font-size:2rem;">este mural é real</h2>
+    <p class="lede">O que escreveres aqui em baixo fica visível para qualquer pessoa que visite este site — é o produto a funcionar, não uma simulação. Não é privado: trata isto como um placar aberto.</p>
+
+    <div class="demo-frame">
+      <div id="gate" class="gate">
+        <p>Como te queres chamar neste mural?</p>
+        <label for="name-input">o teu nome</label>
+        <input id="name-input" class="field" type="text" maxlength="40" placeholder="ex: Joel">
+        <div class="row">
+          <button id="gate-enter" class="pill">entrar no mural</button>
+          <button id="gate-anon" class="pill-outline">continuar como anónimo</button>
+        </div>
+      </div>
+
+      <div id="mural-body" style="display:none;">
+        <div class="composer">
+          <textarea id="note-text" class="field" maxlength="500" placeholder="escreve o que quiseres deixar aqui..."></textarea>
+          <div class="row">
+            <button id="post-note" class="pill">espetar no mural</button>
+            <span class="who">a escrever como <strong id="who-name">anónimo</strong> — <button id="change-name">mudar nome</button></span>
+          </div>
+          <div id="status-msg" class="status-msg"></div>
+        </div>
+        <div id="notes-wrap" class="notes-wrap"><p class="empty-note">a carregar o mural...</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-light" id="precos">
+  <div class="wrap">
+    <span class="kicker">preços simples, sem letras pequenas</span>
+    <h2 style="font-size:2rem;">um plano para cada mural</h2>
+    <div class="pricing-grid">
+      <div class="tier">
+        <h3>Grátis</h3>
+        <div class="tier-price">0 € <span>/ sempre</span></div>
+        <ul><li>1 mural ativo</li><li>até 50 notas</li><li>quem leu, visível em cada nota</li><li>marca "feito com Mural"</li></ul>
+        <a href="#" class="pill-outline" style="border-color:var(--line-soft); color:var(--ink);">começar grátis</a>
+      </div>
+      <div class="tier featured">
+        <h3>Pro</h3>
+        <div class="tier-price">7,90 € <span>/ mês</span></div>
+        <ul><li>murais ilimitados</li><li>notas ilimitadas</li><li>sem marca "feito com Mural"</li><li>estatísticas de leitura por nota</li><li>exportar todas as notas</li></ul>
+        <a href="#" class="pill">escolher Pro</a>
+      </div>
+      <div class="tier">
+        <h3>Negócio</h3>
+        <div class="tier-price">24 € <span>/ mês</span></div>
+        <ul><li>tudo do Pro</li><li>domínio próprio</li><li>moderação e palavras bloqueadas</li><li>suporte prioritário</li></ul>
+        <a href="#" class="pill-outline" style="border-color:var(--line-soft); color:var(--ink);">falar connosco</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>um placar aberto para quem ainda gosta de deixar um rasto</footer>
+
+<div id="modal-backdrop" class="modal-backdrop">
+  <div class="modal">
+    <button id="modal-close" class="modal-close">×</button>
+    <div id="modal-quote" class="quote-full"></div>
+    <div id="modal-author" class="author-line"></div>
+    <div class="readers-title">quem já leu:</div>
+    <div id="modal-readers" class="readers-list"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const STICKY_COLORS = ['var(--lime)','var(--pink)','var(--sky)','var(--orange)'];
+  const NAME_KEY = 'mural-viewer-name';
+  const API = '/api/notes';
+
+  let viewerName = null;
+  let notes = [];
+
+  const gate = document.getElementById('gate');
+  const muralBody = document.getElementById('mural-body');
+  const nameInput = document.getElementById('name-input');
+  const gateEnter = document.getElementById('gate-enter');
+  const gateAnon = document.getElementById('gate-anon');
+  const whoName = document.getElementById('who-name');
+  const changeNameBtn = document.getElementById('change-name');
+  const noteText = document.getElementById('note-text');
+  const postBtn = document.getElementById('post-note');
+  const statusMsg = document.getElementById('status-msg');
+  const notesWrap = document.getElementById('notes-wrap');
+  const modalBackdrop = document.getElementById('modal-backdrop');
+  const modalQuote = document.getElementById('modal-quote');
+  const modalAuthor = document.getElementById('modal-author');
+  const modalReaders = document.getElementById('modal-readers');
+  const modalClose = document.getElementById('modal-close');
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function rotationFor(id){ let h=0; for(let i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))%1000; } return ((h%7)-3); }
+  function colorFor(index){ return STICKY_COLORS[index % STICKY_COLORS.length]; }
+
+  function loadViewerName(){ return localStorage.getItem(NAME_KEY); }
+  function saveViewerName(name){ try{ localStorage.setItem(NAME_KEY, name); }catch(e){} }
+
+  async function loadNotes(){
+    try{
+      const res = await fetch(API);
+      if(!res.ok) throw new Error('falha ao carregar');
+      const data = await res.json();
+      return data.notes || [];
+    }catch(e){ console.error(e); return null; }
+  }
+
+  async function postNote(text, author){
+    try{
+      const res = await fetch(API, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ text, author })
+      });
+      return res.ok;
+    }catch(e){ console.error(e); return false; }
+  }
+
+  async function markRead(id, reader){
+    try{
+      await fetch(API, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ id, reader })
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  function renderNotes(){
+    if(notes === null){
+      notesWrap.innerHTML = '<p class="empty-note">não consegui ligar ao mural — verifica se a base de dados KV está ligada ao projeto na Vercel.</p>';
+      return;
+    }
+    if(!notes.length){
+      notesWrap.innerHTML = '<p class="empty-note">ainda ninguém escreveu nada — sê a primeira pessoa.</p>';
+      return;
+    }
+    const sorted = [...notes].sort((a,b) => b.ts - a.ts);
+    notesWrap.innerHTML = '';
+    sorted.forEach((note, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'sticky';
+      btn.style.background = colorFor(idx);
+      btn.style.transform = `rotate(${rotationFor(note.id)}deg)`;
+      btn.innerHTML = `<span class="quote">${escapeHtml(note.text)}</span>
+        <span class="meta"><span>${escapeHtml(note.author || 'anónimo')}</span><span>${(note.readers||[]).length} leitura(s)</span></span>`;
+      btn.addEventListener('click', () => openNote(note.id));
+      notesWrap.appendChild(btn);
+    });
+  }
+
+  async function openNote(id){
+    const note = notes.find(n => n.id === id);
+    if(!note) return;
+    modalQuote.textContent = note.text;
+    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'}`;
+    modalBackdrop.classList.add('open');
+    renderReaders(note);
+
+    const readerName = viewerName || 'anónimo';
+    note.readers = note.readers || [];
+    if(!note.readers.includes(readerName)){
+      note.readers.push(readerName);
+      renderReaders(note);
+      renderNotes();
+      await markRead(id, readerName);
+    }
+  }
+
+  function renderReaders(note){
+    const readers = note.readers || [];
+    if(!readers.length){ modalReaders.innerHTML = '<span>ainda ninguém — és a primeira pessoa a ler</span>'; return; }
+    modalReaders.innerHTML = readers.map(r => `<span>${escapeHtml(r)}</span>`).join('');
+  }
+
+  modalClose.addEventListener('click', () => modalBackdrop.classList.remove('open'));
+  modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) modalBackdrop.classList.remove('open'); });
+
+  async function enterMural(name){
+    viewerName = name || 'anónimo';
+    saveViewerName(viewerName);
+    whoName.textContent = viewerName;
+    gate.style.display = 'none';
+    muralBody.style.display = 'block';
+    statusMsg.textContent = '';
+    notesWrap.innerHTML = '<p class="empty-note">a carregar o mural...</p>';
+    notes = await loadNotes();
+    renderNotes();
+  }
+
+  gateEnter.addEventListener('click', () => { const val = nameInput.value.trim(); enterMural(val || 'anónimo'); });
+  gateAnon.addEventListener('click', () => enterMural('anónimo'));
+  nameInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') gateEnter.click(); });
+
+  changeNameBtn.addEventListener('click', () => {
+    muralBody.style.display = 'none';
+    gate.style.display = 'block';
+    nameInput.value = viewerName === 'anónimo' ? '' : viewerName;
+    nameInput.focus();
+  });
+
+  postBtn.addEventListener('click', async () => {
+    const text = noteText.value.trim();
+    if(!text){ statusMsg.textContent = 'escreve algo antes de espetar no mural.'; return; }
+    postBtn.disabled = true;
+    statusMsg.textContent = 'a guardar...';
+    const ok = await postNote(text, viewerName || 'anónimo');
+    postBtn.disabled = false;
+    if(ok){
+      noteText.value = '';
+      statusMsg.textContent = 'ficou espetado no mural.';
+      notes = await loadNotes();
+      renderNotes();
+      setTimeout(() => { statusMsg.textContent = ''; }, 2500);
+    }else{
+      statusMsg.textContent = 'não consegui guardar — verifica a ligação à base de dados.';
+    }
+  });
+
+  (function init(){
+    const saved = loadViewerName();
+    if(saved){ enterMural(saved); }
+  })();
+})();
+</script>
+
+</body>
+</html>
