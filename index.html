@@ -120,23 +120,29 @@
   .case h3{ font-size:1.05rem; margin-bottom:6px; }
   .case p{ color: var(--ink-soft); font-size:0.9rem; }
 
-  #demo .lede{ color: var(--muted-invert); max-width:56ch; margin-top:14px; margin-bottom:40px; font-size:1rem;}
-  .demo-frame{ background: var(--bg-dark-2); border:1px solid var(--line); border-radius:14px; padding:34px; }
+  #demo .lede{ color: var(--muted-invert); max-width:56ch; margin-top:14px; margin-bottom:32px; font-size:1rem;}
+  .demo-frame{
+    background: var(--bg-dark-2); border:1px solid var(--line);
+    border-radius:18px; padding:32px 36px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
 
-  .gate{ background: rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:10px; padding: 26px 28px; max-width: 440px; }
-  .gate p{ color: var(--muted-invert); margin-bottom:14px; font-size:0.92rem; }
-  .gate label{ display:block; font-size:0.95rem; margin-bottom:8px; font-weight:600; }
+  .gate{ max-width: 460px; margin: 0; padding: 0; }
+  .gate p.gate-title{ font-size:1.15rem; font-weight:600; color: var(--paper-invert); margin-bottom:16px; }
+  .gate label{ display:block; font-size:0.88rem; color: var(--muted-invert); margin-bottom:8px; font-weight:500; }
   .field{
     width:100%; font-family:'Space Grotesk', sans-serif; font-size:1rem;
-    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:8px;
-    padding: 11px 14px; color: var(--paper-invert);
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:999px;
+    padding: 12px 20px; color: var(--paper-invert);
+    transition: border-color 0.2s, background 0.2s;
   }
   .field::placeholder{ color: var(--muted-invert); }
-  .field:focus{ outline:2px solid var(--lime); outline-offset:1px; }
-  .gate .row{ display:flex; gap:14px; margin-top:16px; align-items:center; flex-wrap:wrap; }
+  .field:focus{ outline:none; border-color: var(--lime); background: rgba(255,255,255,0.09); }
+  
+  .gate .row{ display:flex; gap:12px; margin-top:18px; align-items:center; flex-wrap:wrap; }
 
-  .composer{ margin-bottom: 34px; }
-  .composer textarea.field{ min-height: 100px; resize: vertical; font-size:1rem; }
+  .composer{ margin-bottom: 28px; }
+  .composer textarea.field{ border-radius:14px; min-height: 110px; resize: vertical; font-size:1rem; padding:16px; }
   .composer .row{ display:flex; gap:14px; margin-top:14px; align-items:center; flex-wrap:wrap; }
   .composer .who{ color: var(--muted-invert); font-size:0.9rem; }
   .composer .who button{ background:none; border:none; text-decoration:underline; color: var(--lime); cursor:pointer; font-family:'IBM Plex Mono', monospace; font-size:0.82rem; }
@@ -162,7 +168,17 @@
   .modal-backdrop.open{ display:flex; }
   .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; animation: modalIn 0.3s ease-out; }
   @keyframes modalIn{ from{ opacity:0; transform: scale(0.92) translateY(16px); } to{ opacity:1; transform: scale(1) translateY(0); } }
-  .modal-close{ position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.6rem; color: var(--muted-invert); cursor:pointer; line-height:1; }
+  .modal-close{
+    position: sticky; top: 0px; float: right;
+    margin-top: -20px; margin-right: -16px;
+    background: var(--bg-dark-2); border: 1px solid var(--line);
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: var(--paper-invert); cursor: pointer;
+    line-height: 1; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .modal-close:hover{ background: rgba(255,255,255,0.15); transform: scale(1.1); }
   .modal .quote-full{ font-size:1.15rem; white-space:pre-wrap; margin-bottom:22px; }
   .modal .author-line{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--muted-invert); margin-bottom:20px; }
   .modal .readers-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:10px; }
@@ -302,6 +318,9 @@
   @media (max-width: 860px){
     .hero-grid{ grid-template-columns: 1fr; }
     .floaters{ height: 260px; margin-top:20px; }
+    .demo-frame{ padding: 24px 20px; border-radius: 14px; }
+    .gate .row{ flex-direction: column; align-items: stretch; gap: 10px; }
+    .gate .row .pill, .gate .row .pill-outline{ text-align: center; width: 100%; display: block; }
     .floater, .sticky, .gallery-card {
       box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 2px 4px rgba(0,0,0,0.15) !important;
     }
@@ -333,7 +352,10 @@
 <div class="section-dark">
   <div class="wrap nav">
     <span class="logo">mural</span>
-    <a href="#precos" class="pill">criar mural</a>
+    <div style="display:flex; gap:12px; align-items:center;">
+      <a href="galeria.html" class="pill-outline">ver galeria ↗</a>
+      <a href="#precos" class="pill">criar mural</a>
+    </div>
   </div>
 </div>
 
@@ -402,7 +424,7 @@
 
     <div class="demo-frame">
       <div id="gate" class="gate">
-        <p>Como te queres chamar neste mural?</p>
+        <p class="gate-title">Como te queres chamar neste mural?</p>
         <label for="name-input">o teu nome</label>
         <input id="name-input" class="field" type="text" maxlength="40" placeholder="ex: Joel">
         <div class="row">
@@ -422,9 +444,9 @@
         </div>
         <div id="notes-wrap" class="notes-wrap"><p class="empty-note">a carregar o mural...</p></div>
         <div class="see-more-wrap" id="see-more-wrap" style="display:none;">
-          <button id="open-gallery-btn" class="pill-outline" style="gap:8px; display:inline-flex; align-items:center;">
+          <a href="galeria.html" class="pill-outline" style="gap:8px; display:inline-flex; align-items:center; text-decoration:none;">
             explorar todos os murais ↗
-          </button>
+          </a>
         </div>
       </div>
     </div>

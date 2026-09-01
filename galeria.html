@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galeria de Murais — todos as notas num só lugar</title>
+<meta name="description" content="Explora todas as notas deixadas no Mural. Todas as mensagens abertas, quem leu, e todas as histórias partilhadas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark: #171220;
+    --bg-dark-2: #1f1830;
+    --bg-light: #f7f5f0;
+    --ink: #17131f;
+    --ink-soft: #4a4458;
+    --paper-invert: #f4f1ea;
+    --muted-invert: #b6aec9;
+    --lime: #c6f135;
+    --pink: #ff4fa3;
+    --sky: #5ed0f0;
+    --orange: #ff8a5b;
+    --line: rgba(255,255,255,0.12);
+    --line-soft: rgba(23,19,31,0.12);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Space Grotesk', sans-serif;
+    color: var(--paper-invert);
+    background: var(--bg-dark);
+    line-height:1.6;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; }
+
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:1;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Header */
+  .header{
+    position:sticky; top:0; z-index:40;
+    background: rgba(23,18,32,0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom:1px solid var(--line);
+    padding: 18px 32px;
+  }
+  .header-inner{
+    max-width:1200px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+  }
+  .header-left{ display:flex; align-items:center; gap:24px; }
+  .logo{ font-weight:700; font-size:1.4rem; letter-spacing:-0.02em; color: var(--paper-invert); }
+  .logo span{ font-size:0.8rem; font-family:'IBM Plex Mono', monospace; font-weight:400; color: var(--lime); margin-left:8px; }
+  
+  .stats{
+    display:flex; gap:20px; font-family:'IBM Plex Mono', monospace; font-size:0.85rem;
+    color: var(--muted-invert);
+  }
+  .stats .stat-val{ color: var(--lime); font-weight:600; font-size:1.05rem; margin-right:4px; }
+
+  .search-box{
+    font-family:'Space Grotesk', sans-serif; font-size:0.95rem;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:999px;
+    padding: 10px 20px; color: var(--paper-invert); width: 300px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .search-box::placeholder{ color: var(--muted-invert); }
+  .search-box:focus{ outline:none; border-color: var(--lime); background: rgba(255,255,255,0.09); }
+
+  .nav-btns{ display:flex; align-items:center; gap:12px; }
+  .pill{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.9rem;
+    background: var(--lime); color: var(--ink); padding: 9px 20px; border-radius: 999px;
+    text-decoration:none; display:inline-block; border:none; cursor:pointer;
+    transition: transform 0.15s ease;
+  }
+  .pill:hover{ transform: translateY(-2px); }
+  .pill-outline{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.9rem;
+    background: transparent; color: var(--paper-invert); padding: 8px 18px; border-radius:999px;
+    border: 1.5px solid var(--line); text-decoration:none; display:inline-block; cursor:pointer;
+  }
+  .pill-outline:hover{ border-color: var(--paper-invert); }
+
+  /* Main Container */
+  .main{ flex:1; max-width:1200px; width:100%; margin:0 auto; padding: 40px 32px 80px; }
+
+  .gallery-grid{
+    columns: 4; column-gap: 22px;
+  }
+
+  .gallery-card{
+    break-inside:avoid; margin-bottom: 22px;
+    padding: 24px 22px 28px; border-radius: 12px;
+    color: var(--ink); cursor:pointer; position:relative;
+    font-family:'Space Grotesk', sans-serif;
+    box-shadow: 4px 6px 0 rgba(0,0,0,0.3);
+    opacity:0; transform: translateY(30px) rotate(0deg);
+    animation: cardIn 0.5s ease-out forwards;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .gallery-card:hover{
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 8px 12px 0 rgba(0,0,0,0.35);
+    z-index:3;
+  }
+  @keyframes cardIn{
+    to{ opacity:1; transform: translateY(0) rotate(var(--card-rot, 0deg)); }
+  }
+
+  .gallery-card .gc-text{
+    font-size:1rem; line-height:1.5; margin-bottom:16px;
+    word-break:break-word; white-space:pre-wrap; font-weight:500;
+  }
+  .gallery-card .gc-footer{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; opacity:0.65;
+  }
+  .gallery-card .gc-share{
+    position:absolute; top:12px; right:12px; background: rgba(0,0,0,0.15);
+    border:none; border-radius:50%; width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; transition: opacity 0.2s, background 0.2s; font-size:0.9rem; color: var(--ink);
+  }
+  .gallery-card:hover .gc-share{ opacity:1; }
+  .gallery-card .gc-share:hover{ background: rgba(0,0,0,0.3); }
+
+  .empty-msg{
+    text-align:center; padding:100px 20px;
+    font-family:'IBM Plex Mono', monospace; color: var(--muted-invert); font-size:1.05rem;
+  }
+
+  /* Note Modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background: rgba(10,8,14,0.78); display:none;
+    align-items:center; justify-content:center; padding:24px; z-index:150;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .modal-backdrop.open{ display:flex; }
+  .modal{
+    background: var(--bg-dark-2); max-width: 520px; width:100%; padding: 38px;
+    border-radius:16px; border:1px solid var(--line); position:relative;
+    max-height:85vh; overflow-y:auto; animation: modalIn 0.3s ease-out;
+  }
+  @keyframes modalIn{ from{ opacity:0; transform: scale(0.92) translateY(16px); } to{ opacity:1; transform: scale(1) translateY(0); } }
+  .modal-close{
+    position: sticky; top: 0px; float: right;
+    margin-top: -20px; margin-right: -16px;
+    background: var(--bg-dark-2); border: 1px solid var(--line);
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: var(--paper-invert); cursor: pointer;
+    line-height: 1; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .modal-close:hover{ background: rgba(255,255,255,0.15); transform: scale(1.1); }
+  .modal .quote-full{ font-size:1.2rem; white-space:pre-wrap; margin-bottom:22px; font-weight:500; }
+  .modal .author-line{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color: var(--muted-invert); margin-bottom:20px; }
+  .modal .readers-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:10px; }
+  .modal .readers-list{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--paper-invert); display:flex; flex-wrap:wrap; gap:8px; }
+  .modal .readers-list span{ background: rgba(255,255,255,0.08); padding:4px 10px; border-radius:20px; }
+  .modal-actions{ display:flex; gap:12px; margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+  .btn-share{
+    font-family:'IBM Plex Mono', monospace; font-size:0.82rem; font-weight:500;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:8px;
+    padding: 9px 18px; color: var(--paper-invert); cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; transition: all 0.2s ease;
+  }
+  .btn-share:hover{ background: rgba(198,241,53,0.15); border-color: var(--lime); color: var(--lime); }
+  .btn-share.copied{ background: rgba(198,241,53,0.2); border-color: var(--lime); color: var(--lime); }
+
+  /* Toast */
+  .toast{
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+    background: var(--lime); color: var(--ink); font-family:'IBM Plex Mono', monospace;
+    font-size:0.88rem; font-weight:600; padding: 12px 24px; border-radius:999px;
+    z-index:200; opacity:0; pointer-events:none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(198,241,53,0.3);
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+
+  footer{ text-align:center; padding: 36px 0; color: var(--muted-invert); font-family:'IBM Plex Mono', monospace; font-size:0.85rem; border-top:1px solid var(--line); margin-top:auto; }
+
+  /* Responsive */
+  @media (max-width: 1100px){
+    .gallery-grid{ columns:3; }
+  }
+  @media (max-width: 860px){
+    .header{ padding: 16px 20px; }
+    .header-inner{ flex-direction:column; align-items:stretch; gap:14px; }
+    .search-box{ width:100%; order:10; }
+    .main{ padding: 24px 20px 60px; }
+    .gallery-grid{ columns:2; }
+    .gallery-card{ box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 2px 4px rgba(0,0,0,0.15) !important; }
+    .gallery-card:hover{ box-shadow: 0 6px 18px rgba(0,0,0,0.35) !important; }
+    .gallery-card .gc-share{ opacity:0.85; }
+  }
+  @media (max-width: 520px){
+    .gallery-grid{ columns:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .gallery-card{ animation:none; opacity:1; transform:none; }
+    .modal{ animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="/" class="logo">mural <span>galeria</span></a>
+      <div class="stats">
+        <span><span class="stat-val" id="stat-notes">0</span>notas</span>
+        <span><span class="stat-val" id="stat-readers">0</span>leituras</span>
+      </div>
+    </div>
+    <input id="search-input" class="search-box" type="text" placeholder="pesquisar notas ou autores...">
+  </div>
+</header>
+
+<main class="main">
+  <div id="gallery-grid" class="gallery-grid">
+    <p class="empty-msg">a carregar o mural...</p>
+  </div>
+</main>
+
+<footer>um placar aberto para quem ainda gosta de deixar um rasto</footer>
+
+<!-- Modal -->
+<div id="modal-backdrop" class="modal-backdrop">
+  <div class="modal">
+    <button id="modal-close" class="modal-close">×</button>
+    <div id="modal-quote" class="quote-full"></div>
+    <div id="modal-author" class="author-line"></div>
+    <div class="readers-title">quem já leu:</div>
+    <div id="modal-readers" class="readers-list"></div>
+    <div class="modal-actions">
+      <button id="modal-share" class="btn-share">🔗 copiar link com imagem</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+  const NAME_KEY = 'mural-viewer-name';
+  const API = '/api/notes';
+
+  let viewerName = null;
+  let notes = [];
+  let currentNoteId = null;
+
+  const galleryGrid = document.getElementById('gallery-grid');
+  const searchInput = document.getElementById('search-input');
+  const statNotes = document.getElementById('stat-notes');
+  const statReaders = document.getElementById('stat-readers');
+  const modalBackdrop = document.getElementById('modal-backdrop');
+  const modalQuote = document.getElementById('modal-quote');
+  const modalAuthor = document.getElementById('modal-author');
+  const modalReaders = document.getElementById('modal-readers');
+  const modalClose = document.getElementById('modal-close');
+  const modalShare = document.getElementById('modal-share');
+  const toast = document.getElementById('toast');
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function rotationFor(id){ let h=0; for(let i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))%1000; } return ((h%7)-3); }
+  function hueFromId(id){
+    let hash = 0;
+    for(let i=0; i<(id||'').length; i++){
+      hash = ((hash << 5) - hash) + id.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return Math.abs(hash) % 360;
+  }
+  function uniqueColorForNote(id){
+    const hue = hueFromId(id);
+    return `hsl(${hue}, 80%, 72%)`;
+  }
+  function getShareUrl(noteId){
+    return window.location.origin + '/api/nota/' + noteId;
+  }
+  function loadViewerName(){ return localStorage.getItem(NAME_KEY); }
+
+  function showToast(msg, duration){
+    duration = duration || 2500;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.classList.remove('show'); }, duration);
+  }
+
+  function timeAgo(ts){
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if(mins < 1) return 'agora mesmo';
+    if(mins < 60) return `há ${mins}min`;
+    const hours = Math.floor(mins / 60);
+    if(hours < 24) return `há ${hours}h`;
+    const days = Math.floor(hours / 24);
+    if(days < 30) return `há ${days}d`;
+    return `há ${Math.floor(days/30)}mês(es)`;
+  }
+
+  function animateCounter(el, target){
+    const duration = 800;
+    const start = parseInt(el.textContent) || 0;
+    if(start === target) return;
+    const startTime = performance.now();
+    function tick(now){
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + (target - start) * eased);
+      if(progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  async function loadNotes(){
+    try{
+      const res = await fetch(API);
+      if(!res.ok) throw new Error('falha ao carregar');
+      const data = await res.json();
+      return data.notes || [];
+    }catch(e){ console.error(e); return null; }
+  }
+
+  async function markRead(id, reader){
+    try{
+      await fetch(API, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ id, reader })
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  function renderGallery(data){
+    if(data === null){
+      galleryGrid.innerHTML = '<p class="empty-msg">não consegui carregar as notas do mural.</p>';
+      animateCounter(statNotes, 0);
+      animateCounter(statReaders, 0);
+      return;
+    }
+    if(!data.length){
+      galleryGrid.innerHTML = '<p class="empty-msg">nenhuma nota encontrada.</p>';
+      animateCounter(statNotes, 0);
+      animateCounter(statReaders, 0);
+      return;
+    }
+
+    const sorted = [...data].sort((a,b) => b.ts - a.ts);
+    galleryGrid.innerHTML = '';
+
+    let totalReaders = 0;
+    sorted.forEach((note, idx) => {
+      totalReaders += (note.readers || []).length;
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+      card.style.background = uniqueColorForNote(note.id);
+      const rot = rotationFor(note.id);
+      card.style.setProperty('--card-rot', rot + 'deg');
+      card.style.animationDelay = (idx * 0.03) + 's';
+
+      card.innerHTML = `
+        <button class="gc-share" title="copiar link com preview de imagem">🔗</button>
+        <div class="gc-text">${escapeHtml(note.text)}</div>
+        <div class="gc-footer">
+          <span>${escapeHtml(note.author || 'anónimo')}</span>
+          <span>${(note.readers||[]).length} leitura(s) · ${timeAgo(note.ts)}</span>
+        </div>
+      `;
+
+      card.addEventListener('click', (e) => {
+        if(e.target.closest('.gc-share')) return;
+        openNote(note.id);
+      });
+
+      const shareBtn = card.querySelector('.gc-share');
+      shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = getShareUrl(note.id);
+        copyToClipboard(url);
+      });
+
+      galleryGrid.appendChild(card);
+    });
+
+    animateCounter(statNotes, sorted.length);
+    animateCounter(statReaders, totalReaders);
+  }
+
+  function setHash(noteId){
+    if(noteId){
+      history.replaceState(null, '', '#nota/' + noteId);
+    } else {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+
+  async function openNote(id, skipRead){
+    const note = notes.find(n => n.id === id);
+    if(!note) return;
+    currentNoteId = id;
+    modalQuote.textContent = note.text;
+    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'} · ${timeAgo(note.ts)}`;
+    modalBackdrop.classList.add('open');
+    renderReaders(note);
+    setHash(id);
+
+    modalShare.textContent = '🔗 copiar link com imagem';
+    modalShare.classList.remove('copied');
+
+    if(!skipRead){
+      const readerName = viewerName || 'anónimo';
+      note.readers = note.readers || [];
+      if(!note.readers.includes(readerName)){
+        note.readers.push(readerName);
+        renderReaders(note);
+        renderGallery(notes);
+        await markRead(id, readerName);
+      }
+    }
+  }
+
+  function closeModal(){
+    modalBackdrop.classList.remove('open');
+    currentNoteId = null;
+    setHash(null);
+  }
+
+  function renderReaders(note){
+    const readers = note.readers || [];
+    if(!readers.length){ modalReaders.innerHTML = '<span>ainda ninguém — és a primeira pessoa a ler</span>'; return; }
+    modalReaders.innerHTML = readers.map(r => `<span>${escapeHtml(r)}</span>`).join('');
+  }
+
+  function copyToClipboard(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('link com preview de imagem copiado ✓');
+      }).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); showToast('link copiado ✓'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  modalShare.addEventListener('click', () => {
+    if(!currentNoteId) return;
+    const url = getShareUrl(currentNoteId);
+    copyToClipboard(url);
+    modalShare.innerHTML = '✓ link copiado!';
+    modalShare.classList.add('copied');
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if(!q){
+      renderGallery(notes);
+      return;
+    }
+    const filtered = notes.filter(n =>
+      (n.text || '').toLowerCase().includes(q) ||
+      (n.author || '').toLowerCase().includes(q)
+    );
+    renderGallery(filtered);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && modalBackdrop.classList.contains('open')){
+      closeModal();
+    }
+  });
+
+  function getHashNoteId(){
+    const hash = window.location.hash;
+    if(hash.startsWith('#nota/')){
+      return hash.slice(6);
+    }
+    return null;
+  }
+
+  async function handleDeepLink(){
+    const noteId = getHashNoteId();
+    if(!noteId) return;
+    const note = notes.find(n => n.id === noteId);
+    if(note){
+      openNote(noteId, true);
+    }
+  }
+
+  (async function init(){
+    viewerName = loadViewerName();
+    notes = await loadNotes();
+    renderGallery(notes);
+    await handleDeepLink();
+  })();
+
+  window.addEventListener('hashchange', () => {
+    const noteId = getHashNoteId();
+    if(noteId){
+      openNote(noteId, true);
+    } else {
+      closeModal();
+    }
+  });
+})();
+</script>
+</body>
+</html>
