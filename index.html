@@ -166,20 +166,32 @@
   /* --- Note modal --- */
   .modal-backdrop{ position:fixed; inset:0; background: rgba(10,8,14,0.72); display:none; align-items:center; justify-content:center; padding:24px; z-index:150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   .modal-backdrop.open{ display:flex; }
-  .modal{ background: var(--bg-dark-2); max-width: 500px; width:100%; padding: 38px; border-radius:14px; border:1px solid var(--line); position:relative; max-height:80vh; overflow-y:auto; animation: modalIn 0.3s ease-out; }
+  .modal{
+    background: var(--bg-dark-2); max-width: 520px; width:100%;
+    border-radius:18px; border:1px solid var(--line); position:relative;
+    max-height:85vh; display:flex; flex-direction:column; overflow:hidden;
+    animation: modalIn 0.3s ease-out; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
   @keyframes modalIn{ from{ opacity:0; transform: scale(0.92) translateY(16px); } to{ opacity:1; transform: scale(1) translateY(0); } }
   .modal-close{
-    position: sticky; top: 0px; float: right;
-    margin-top: -20px; margin-right: -16px;
-    background: var(--bg-dark-2); border: 1px solid var(--line);
-    border-radius: 50%; width: 32px; height: 32px;
+    position:absolute; top:16px; right:16px; z-index:30;
+    background: rgba(255,255,255,0.08); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.3rem; color: var(--paper-invert); cursor: pointer;
-    line-height: 1; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    transition: transform 0.15s, background 0.15s;
+    line-height: 1; transition: transform 0.15s, background 0.15s;
   }
-  .modal-close:hover{ background: rgba(255,255,255,0.15); transform: scale(1.1); }
-  .modal .quote-full{ font-size:1.15rem; white-space:pre-wrap; margin-bottom:22px; }
+  .modal-close:hover{ background: rgba(255,255,255,0.2); transform: scale(1.1); }
+  .modal-body{
+    padding: 36px 36px 32px; overflow-y:auto; flex:1;
+    scroll-behavior:smooth;
+  }
+  .modal-body::-webkit-scrollbar{ width:6px; }
+  .modal-body::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.15); border-radius:3px; }
+  .modal .quote-full{
+    font-size:1.18rem; white-space:pre-wrap; margin-bottom:22px; font-weight:500;
+    padding-right: 28px; word-break: break-word; line-height: 1.55;
+  }
   .modal .author-line{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--muted-invert); margin-bottom:20px; }
   .modal .readers-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:10px; }
   .modal .readers-list{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--paper-invert); display:flex; flex-wrap:wrap; gap:8px; }
@@ -193,6 +205,18 @@
   }
   .btn-share:hover{ background: rgba(198,241,53,0.15); border-color: var(--lime); color: var(--lime); }
   .btn-share.copied{ background: rgba(198,241,53,0.2); border-color: var(--lime); color: var(--lime); }
+  .comments-section{ margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+  .comments-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:12px; }
+  .comments-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; max-height:220px; overflow-y:auto; }
+  .comment-item{ background: rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:0.9rem; }
+  .comment-meta{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color: var(--muted-invert); margin-top:4px; display:flex; justify-content:space-between; }
+  .comment-composer{ display:flex; gap:8px; align-items:center; }
+  .comment-field{ flex:1; font-family:'Space Grotesk', sans-serif; font-size:0.9rem; background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:999px; padding:9px 16px; color: var(--paper-invert); }
+  .comment-field::placeholder{ color: var(--muted-invert); }
+  .comment-field:focus{ outline:none; border-color: var(--lime); background: rgba(255,255,255,0.09); }
+  .btn-comment{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.85rem; background: var(--lime); color: var(--ink); border:none; border-radius:999px; padding:9px 18px; cursor:pointer; transition: transform 0.15s ease; }
+  .btn-comment:hover{ transform: translateY(-1px); }
+  .btn-comment:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
 
   /* ========== GALLERY OVERLAY ========== */
   .gallery-overlay{
@@ -353,7 +377,7 @@
   <div class="wrap nav">
     <span class="logo">mural</span>
     <div style="display:flex; gap:12px; align-items:center;">
-      <a href="galeria.html" class="pill-outline">ver galeria ↗</a>
+      <a href="galeria.html" class="pill-outline">ver galeria</a>
       <a href="#precos" class="pill">criar mural</a>
     </div>
   </div>
@@ -445,7 +469,7 @@
         <div id="notes-wrap" class="notes-wrap"><p class="empty-note">a carregar o mural...</p></div>
         <div class="see-more-wrap" id="see-more-wrap" style="display:none;">
           <a href="galeria.html" class="pill-outline" style="gap:8px; display:inline-flex; align-items:center; text-decoration:none;">
-            explorar todos os murais ↗
+            explorar todos os murais
           </a>
         </div>
       </div>
@@ -485,13 +509,25 @@
 <!-- Note detail modal -->
 <div id="modal-backdrop" class="modal-backdrop">
   <div class="modal">
-    <button id="modal-close" class="modal-close">×</button>
-    <div id="modal-quote" class="quote-full"></div>
-    <div id="modal-author" class="author-line"></div>
-    <div class="readers-title">quem já leu:</div>
-    <div id="modal-readers" class="readers-list"></div>
-    <div class="modal-actions">
-      <button id="modal-share" class="btn-share">🔗 copiar link</button>
+    <button id="modal-close" class="modal-close" title="Fechar">×</button>
+    <div class="modal-body">
+      <div id="modal-quote" class="quote-full"></div>
+      <div id="modal-author" class="author-line"></div>
+      <div class="readers-title">quem já leu:</div>
+      <div id="modal-readers" class="readers-list"></div>
+      
+      <div class="comments-section">
+        <div class="comments-title">respostas (<span id="modal-comments-count">0</span>):</div>
+        <div id="modal-comments-list" class="comments-list"></div>
+        <div class="comment-composer">
+          <input id="comment-text-input" class="comment-field" type="text" maxlength="300" placeholder="escreve uma resposta...">
+          <button id="post-comment-btn" class="btn-comment">responder ↵</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="modal-share" class="btn-share">🔗 copiar link com imagem</button>
+      </div>
     </div>
   </div>
 </div>
@@ -532,12 +568,10 @@
   const modalReaders = document.getElementById('modal-readers');
   const modalClose = document.getElementById('modal-close');
   const modalShare = document.getElementById('modal-share');
-  const galleryOverlay = document.getElementById('gallery-overlay');
-  const galleryGrid = document.getElementById('gallery-grid');
-  const galleryClose = document.getElementById('gallery-close');
-  const gallerySearch = document.getElementById('gallery-search');
-  const galleryCountNotes = document.getElementById('gallery-count-notes');
-  const galleryCountReaders = document.getElementById('gallery-count-readers');
+  const modalCommentsCount = document.getElementById('modal-comments-count');
+  const modalCommentsList = document.getElementById('modal-comments-list');
+  const commentTextInput = document.getElementById('comment-text-input');
+  const postCommentBtn = document.getElementById('post-comment-btn');
   const toast = document.getElementById('toast');
 
   // --- Utilities ---
@@ -581,22 +615,6 @@
     return `há ${Math.floor(days/30)}mês(es)`;
   }
 
-  // --- Animated counter ---
-  function animateCounter(el, target){
-    const duration = 800;
-    const start = parseInt(el.textContent) || 0;
-    if(start === target) return;
-    const startTime = performance.now();
-    function tick(now){
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(start + (target - start) * eased);
-      if(progress < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-
   // --- API ---
   async function loadNotes(){
     try{
@@ -626,6 +644,18 @@
     }catch(e){ console.error(e); }
   }
 
+  async function postComment(noteId, text, author){
+    try{
+      const res = await fetch(API, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ noteId, text, author, action: 'comment' })
+      });
+      if(!res.ok) return null;
+      const data = await res.json();
+      return data.comment;
+    }catch(e){ console.error(e); return null; }
+  }
+
   // --- Render demo notes ---
   function renderNotes(){
     if(notes === null){
@@ -646,8 +676,9 @@
       btn.className = 'sticky';
       btn.style.background = uniqueColorForNote(note.id);
       btn.style.transform = `rotate(${rotationFor(note.id)}deg)`;
+      const commentsCount = (note.comments || []).length;
       btn.innerHTML = `<span class="quote">${escapeHtml(note.text)}</span>
-        <span class="meta"><span>${escapeHtml(note.author || 'anónimo')}</span><span>${(note.readers||[]).length} leitura(s)</span></span>`;
+        <span class="meta"><span>${escapeHtml(note.author || 'anónimo')}</span><span>${(note.readers||[]).length} L · ${commentsCount} 💬</span></span>`;
       btn.addEventListener('click', () => openNote(note.id));
       notesWrap.appendChild(btn);
     });
@@ -663,6 +694,24 @@
     }
   }
 
+  function renderComments(note){
+    const comments = note.comments || [];
+    modalCommentsCount.textContent = comments.length;
+    if(!comments.length){
+      modalCommentsList.innerHTML = '<p style="font-family:\'IBM Plex Mono\', monospace; font-size:0.8rem; color:var(--muted-invert);">ainda sem respostas — sê a primeira pessoa a responder.</p>';
+      return;
+    }
+    modalCommentsList.innerHTML = comments.map(c => `
+      <div class="comment-item">
+        <div>${escapeHtml(c.text)}</div>
+        <div class="comment-meta">
+          <span>— ${escapeHtml(c.author || 'anónimo')}</span>
+          <span>${timeAgo(c.ts)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
   async function openNote(id, skipRead){
     const note = notes.find(n => n.id === id);
     if(!note) return;
@@ -671,6 +720,8 @@
     modalAuthor.textContent = `deixado por ${note.author || 'anónimo'} · ${timeAgo(note.ts)}`;
     modalBackdrop.classList.add('open');
     renderReaders(note);
+    renderComments(note);
+    commentTextInput.value = '';
     setHash(id);
 
     // Reset share button

@@ -13,7 +13,31 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { text, author } = req.body || {};
+      const { noteId, text, author, action } = req.body || {};
+
+      // Add a comment to an existing note
+      if (noteId || action === 'comment') {
+        if (!noteId || !text || typeof text !== 'string' || !text.trim()) {
+          return res.status(400).json({ error: 'noteId ou texto em falta' });
+        }
+        const notes = (await db.get(NOTES_KEY)) || [];
+        const note = notes.find((n) => n.id === noteId);
+        if (!note) {
+          return res.status(404).json({ error: 'nota não encontrada' });
+        }
+        note.comments = note.comments || [];
+        const comment = {
+          id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+          text: text.trim().slice(0, MAX_TEXT),
+          author: (author || 'anónimo').toString().trim().slice(0, MAX_NAME) || 'anónimo',
+          ts: Date.now()
+        };
+        note.comments.push(comment);
+        await db.set(NOTES_KEY, notes);
+        return res.status(200).json({ comment, note });
+      }
+
+      // Create a new note
       if (!text || typeof text !== 'string' || !text.trim()) {
         return res.status(400).json({ error: 'texto em falta' });
       }
@@ -23,7 +47,8 @@ export default async function handler(req, res) {
         text: text.trim().slice(0, MAX_TEXT),
         author: (author || 'anónimo').toString().trim().slice(0, MAX_NAME) || 'anónimo',
         ts: Date.now(),
-        readers: []
+        readers: [],
+        comments: []
       };
       notes.push(note);
       await db.set(NOTES_KEY, notes);
