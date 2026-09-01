@@ -104,20 +104,28 @@
   .kicker{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; letter-spacing:0.02em; color: var(--lime); margin-bottom:16px; display:block; }
   .section-light .kicker{ color:#a0782f; }
 
-  .nav{ display:flex; align-items:center; justify-content:space-between; padding: 26px 0; position:relative; z-index:3; }
-  .logo{ font-weight:700; font-size:1.2rem; letter-spacing:-0.02em; }
+  .header-nav{
+    position:sticky; top:0; z-index:40;
+    background: rgba(23,18,32,0.88);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding: 18px 0; position:relative; z-index:3; }
+  .nav-right{ display:flex; align-items:center; gap:12px; }
+  .logo{ font-weight:700; font-size:1.3rem; letter-spacing:-0.02em; text-decoration:none; color: var(--paper-invert); white-space:nowrap; }
   .pill{
     font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.95rem;
-    background: var(--lime); color: var(--ink); padding: 11px 24px; border-radius: 999px;
+    background: var(--lime); color: var(--ink); padding: 10px 22px; border-radius: 999px;
     text-decoration:none; display:inline-block; border:none; cursor:pointer;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease; white-space:nowrap;
   }
   .pill:hover{ transform: translateY(-2px); }
   .pill:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
   .pill-outline{
     font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.95rem;
-    background: transparent; color: var(--paper-invert); padding: 10px 22px; border-radius:999px;
+    background: transparent; color: var(--paper-invert); padding: 9px 20px; border-radius:999px;
     border: 1.5px solid var(--line); text-decoration:none; display:inline-block; cursor:pointer;
+    white-space:nowrap;
   }
   .section-light .pill-outline{ color: var(--ink); border-color: var(--line-soft); }
 
@@ -126,6 +134,7 @@
     background: rgba(255,255,255,0.06); border:1px solid var(--line);
     border-radius:999px; padding: 7px 14px; color: var(--paper-invert);
     cursor:pointer; transition: all 0.2s ease; display:inline-flex; align-items:center; gap:4px;
+    white-space:nowrap;
   }
   .lang-btn:hover{ border-color: var(--lime); color: var(--lime); }
   .lang-btn span.active-lang{ color: var(--lime); font-weight:700; opacity:1; }
@@ -278,7 +287,7 @@
     width:34px; height:34px; border-radius:50%; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
     font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:0.85rem;
-    color: #17131f; background: var(--lime); text-transform:uppercase; user-select:none;
+    color: #17131f; background: var(--lime); text-transform:uppercase; -webkit-user-select:none; user-select:none;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   }
   .fb-comment-main{ display:flex; flex-direction:column; flex:1; max-width: calc(100% - 44px); }
@@ -438,12 +447,28 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 20px rgba(198,241,53,0.3);
   }
+  body.modal-open{
+    overflow: hidden !important;
+    touch-action: none;
+  }
+  .svg-icon{
+    width: 1.05em; height: 1.05em;
+    display: inline-block; vertical-align: -0.15em;
+    flex-shrink: 0; stroke: currentColor; fill: none;
+  }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
 
   @media (max-width: 1100px){
     .gallery-grid{ columns:3; }
   }
   @media (max-width: 860px){
+    .wrap{ padding: 0 20px; }
+    .nav{ padding: 14px 0; }
+    .logo{ font-size: 1.15rem; }
+    .nav-right{ gap: 8px; }
+    .pill{ padding: 8px 16px; font-size: 0.85rem; }
+    .pill-outline{ padding: 7px 14px; font-size: 0.85rem; }
+    .lang-btn{ padding: 6px 10px; font-size: 0.78rem; }
     .hero-grid{ grid-template-columns: 1fr; }
     .floaters{ height: 260px; margin-top:20px; }
     .demo-frame{ padding: 24px 20px; border-radius: 14px; }
@@ -464,7 +489,14 @@
     .gallery-search{ width:100%; order:10; }
     .gallery-body{ padding: 24px 20px 80px; }
   }
-  @media (max-width: 520px){
+  @media (max-width: 480px){
+    .wrap{ padding: 0 14px; }
+    .nav{ padding: 12px 0; }
+    .logo{ font-size: 1.1rem; }
+    .nav-right{ gap: 6px; }
+    .pill{ padding: 7px 12px; font-size: 0.8rem; }
+    .pill-outline{ padding: 6px 10px; font-size: 0.8rem; border-width: 1.5px; }
+    .lang-btn{ padding: 5px 8px; font-size: 0.75rem; }
     .gallery-grid{ columns:1; }
   }
   @media (prefers-reduced-motion: reduce){
@@ -477,10 +509,10 @@
 <body>
 <div class="grain"></div>
 
-<div class="section-dark">
+<header class="header-nav">
   <div class="wrap nav">
-    <span class="logo">mural</span>
-    <div style="display:flex; gap:12px; align-items:center;">
+    <a href="/" class="logo">mural</a>
+    <div class="nav-right">
       <button id="lang-btn" class="lang-btn" title="Alterar idioma / Switch language">
         <span id="lang-pt" class="active-lang">PT</span> | <span id="lang-en" class="inactive-lang">EN</span>
       </button>
@@ -488,7 +520,7 @@
       <a href="#demo" class="pill" id="nav-create">criar mural</a>
     </div>
   </div>
-</div>
+</header>
 
 <section class="section-dark hero">
   <div class="wrap hero-grid">
@@ -502,7 +534,7 @@
       </div>
     </div>
     <div class="floaters" id="hero-floaters">
-      <div class="floater f1" id="floater-1">chegámos primeiro 👋<span class="tag">— Inês</span></div>
+      <div class="floater f1" id="floater-1">chegámos primeiro<span class="tag">— Inês</span></div>
       <div class="floater f2" id="floater-2">isto devia existir há mais tempo.<span class="tag">— Tiago</span></div>
       <div class="floater f3" id="floater-3">deixei aqui a minha ideia.<span class="tag">— Marta</span></div>
       <div class="floater f4" id="floater-4">guardado.<span class="tag">— anónimo</span></div>
@@ -515,9 +547,9 @@
     <span class="kicker" id="feat-kicker">o que torna isto diferente</span>
     <h2 style="font-size:2rem;" id="feat-h2">um placar, não uma caixa de entrada</h2>
     <div class="feat-grid">
-      <div class="feat-card"><div class="chip c1">✎</div><h3 id="feat-1-title">Qualquer pessoa escreve</h3><p id="feat-1-desc">Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.</p></div>
-      <div class="feat-card"><div class="chip c2">👁</div><h3 id="feat-2-title">Todas as notas ficam abertas</h3><p id="feat-2-desc">Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.</p></div>
-      <div class="feat-card"><div class="chip c3">✓</div><h3 id="feat-3-title">Vês quem já leu</h3><p id="feat-3-desc">Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.</p></div>
+      <div class="feat-card"><div class="chip c1"><svg class="svg-icon" style="width:1.1em; height:1.1em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div><h3 id="feat-1-title">Qualquer pessoa escreve</h3><p id="feat-1-desc">Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.</p></div>
+      <div class="feat-card"><div class="chip c2"><svg class="svg-icon" style="width:1.1em; height:1.1em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h3 id="feat-2-title">Todas as notas ficam abertas</h3><p id="feat-2-desc">Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.</p></div>
+      <div class="feat-card"><div class="chip c3"><svg class="svg-icon" style="width:1.1em; height:1.1em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 id="feat-3-title">Vês quem já leu</h3><p id="feat-3-desc">Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.</p></div>
     </div>
   </div>
 </section>
@@ -589,7 +621,7 @@
 <!-- Note detail modal -->
 <div id="modal-backdrop" class="modal-backdrop">
   <div class="modal">
-    <button id="modal-close" class="modal-close" title="Fechar">×</button>
+    <button id="modal-close" class="modal-close" title="Fechar"><svg class="svg-icon" style="width:1em; height:1em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <div class="modal-body">
       <div id="modal-quote" class="quote-full"></div>
       <div id="modal-author" class="author-line"></div>
@@ -597,19 +629,19 @@
       <div id="modal-readers" class="readers-list"></div>
       
       <div class="comments-section">
-        <div class="comments-title">💬 Respostas (<span id="modal-comments-count">0</span>)</div>
+        <div class="comments-title"><svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Respostas (<span id="modal-comments-count">0</span>)</div>
         <div id="modal-comments-list" class="comments-list"></div>
         <div class="fb-composer">
           <div class="fb-avatar" id="viewer-avatar">?</div>
           <div class="fb-composer-field-wrap">
             <input id="comment-text-input" class="fb-composer-field" type="text" maxlength="300" placeholder="Escreve uma resposta...">
-            <button id="post-comment-btn" class="fb-send-btn" title="Enviar">➔</button>
+            <button id="post-comment-btn" class="fb-send-btn" title="Enviar"><svg class="svg-icon" style="width:0.9em; height:0.9em; stroke-width:2.5;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
           </div>
         </div>
       </div>
 
       <div class="modal-actions">
-        <button id="modal-share" class="btn-share">🔗 copiar link</button>
+        <button id="modal-share" class="btn-share"><svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> copiar link</button>
       </div>
     </div>
   </div>
@@ -680,13 +712,13 @@
       by_author: "deixado por {author} · {time}",
       who_read: "quem já leu:",
       no_readers: "ainda ninguém — és a primeira pessoa a ler",
-      responses: "💬 Respostas ({count})",
+      responses: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Respostas ({count})`,
       no_comments: "ainda sem respostas — sê a primeira pessoa a responder.",
       comment_ph: "Escreve uma resposta...",
-      copy_link: "🔗 copiar link",
-      link_copied: "✓ link copiado!",
-      toast_copied: "link com preview de imagem copiado ✓",
-      toast_comment_ok: "resposta enviada ✓",
+      copy_link: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> copiar link`,
+      link_copied: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> link copiado!`,
+      toast_copied: "link com preview de imagem copiado",
+      toast_comment_ok: "resposta enviada",
       toast_comment_err: "erro ao enviar resposta",
       empty_loading: "a carregar o mural...",
       empty_error: "não consegui ligar ao mural — verifica se a base de dados KV está ligada ao projeto na Vercel.",
@@ -698,7 +730,7 @@
       footer: "um placar aberto para quem ainda gosta de deixar um rasto",
       anon: "anónimo",
       like: "Gostar",
-      liked: "Gostei ♥",
+      liked: "Gostei",
       time_just_now: "agora mesmo",
       time_min: "há {n}min",
       time_hour: "há {n}h",
@@ -756,13 +788,13 @@
       by_author: "left by {author} · {time}",
       who_read: "who has read:",
       no_readers: "nobody yet — you're the first to read",
-      responses: "💬 Replies ({count})",
+      responses: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Replies ({count})`,
       no_comments: "no replies yet — be the first to reply.",
       comment_ph: "Write a reply...",
-      copy_link: "🔗 copy link",
-      link_copied: "✓ link copied!",
-      toast_copied: "link with image preview copied ✓",
-      toast_comment_ok: "reply sent ✓",
+      copy_link: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> copy link`,
+      link_copied: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> link copied!`,
+      toast_copied: "link with image preview copied",
+      toast_comment_ok: "reply sent",
       toast_comment_err: "error sending reply",
       empty_loading: "loading the mural...",
       empty_error: "could not connect to mural — check if KV database is linked on Vercel.",
@@ -774,7 +806,7 @@
       footer: "an open board for those who still like to leave a trace",
       anon: "anonymous",
       like: "Like",
-      liked: "Liked ♥",
+      liked: "Liked",
       time_just_now: "just now",
       time_min: "{n}m ago",
       time_hour: "{n}h ago",
@@ -831,68 +863,72 @@
     try { localStorage.setItem(LANG_KEY, currentLang); } catch(e){}
     document.title = t('page_title');
 
-    document.getElementById('nav-gallery').textContent = t('nav_gallery');
-    document.getElementById('nav-create').textContent = t('nav_create');
+    function setTxt(id, key){ const el = document.getElementById(id); if(el) el.textContent = t(key); }
 
-    document.getElementById('hero-kicker').textContent = t('hero_kicker');
-    document.getElementById('hero-h1').textContent = t('hero_h1');
-    document.getElementById('hero-lede').textContent = t('hero_lede');
-    document.getElementById('hero-cta-create').textContent = t('hero_cta_create');
-    document.getElementById('hero-cta-demo').textContent = t('hero_cta_demo');
+    setTxt('nav-gallery', 'nav_gallery');
+    setTxt('nav-create', 'nav_create');
 
-    document.getElementById('feat-kicker').textContent = t('feat_kicker');
-    document.getElementById('feat-h2').textContent = t('feat_h2');
-    document.getElementById('feat-1-title').textContent = t('feat_1_title');
-    document.getElementById('feat-1-desc').textContent = t('feat_1_desc');
-    document.getElementById('feat-2-title').textContent = t('feat_2_title');
-    document.getElementById('feat-2-desc').textContent = t('feat_2_desc');
-    document.getElementById('feat-3-title').textContent = t('feat_3_title');
-    document.getElementById('feat-3-desc').textContent = t('feat_3_desc');
+    setTxt('hero-kicker', 'hero_kicker');
+    setTxt('hero-h1', 'hero_h1');
+    setTxt('hero-lede', 'hero_lede');
+    setTxt('hero-cta-create', 'hero_cta_create');
+    setTxt('hero-cta-demo', 'hero_cta_demo');
 
-    document.getElementById('steps-kicker').textContent = t('steps_kicker');
-    document.getElementById('steps-h2').textContent = t('steps_h2');
-    document.getElementById('step-1-title').textContent = t('step_1_title');
-    document.getElementById('step-1-desc').textContent = t('step_1_desc');
-    document.getElementById('step-2-title').textContent = t('step_2_title');
-    document.getElementById('step-2-desc').textContent = t('step_2_desc');
-    document.getElementById('step-3-title').textContent = t('step_3_title');
-    document.getElementById('step-3-desc').textContent = t('step_3_desc');
+    setTxt('feat-kicker', 'feat_kicker');
+    setTxt('feat-h2', 'feat_h2');
+    setTxt('feat-1-title', 'feat_1_title');
+    setTxt('feat-1-desc', 'feat_1_desc');
+    setTxt('feat-2-title', 'feat_2_title');
+    setTxt('feat-2-desc', 'feat_2_desc');
+    setTxt('feat-3-title', 'feat_3_title');
+    setTxt('feat-3-desc', 'feat_3_desc');
 
-    document.getElementById('cases-kicker').textContent = t('cases_kicker');
-    document.getElementById('cases-h2').textContent = t('cases_h2');
-    document.getElementById('case-1-title').textContent = t('case_1_title');
-    document.getElementById('case-1-desc').textContent = t('case_1_desc');
-    document.getElementById('case-2-title').textContent = t('case_2_title');
-    document.getElementById('case-2-desc').textContent = t('case_2_desc');
-    document.getElementById('case-3-title').textContent = t('case_3_title');
-    document.getElementById('case-3-desc').textContent = t('case_3_desc');
-    document.getElementById('case-4-title').textContent = t('case_4_title');
-    document.getElementById('case-4-desc').textContent = t('case_4_desc');
+    setTxt('steps-kicker', 'steps_kicker');
+    setTxt('steps-h2', 'steps_h2');
+    setTxt('step-1-title', 'step_1_title');
+    setTxt('step-1-desc', 'step_1_desc');
+    setTxt('step-2-title', 'step_2_title');
+    setTxt('step-2-desc', 'step_2_desc');
+    setTxt('step-3-title', 'step_3_title');
+    setTxt('step-3-desc', 'step_3_desc');
 
-    document.getElementById('demo-kicker').textContent = t('demo_kicker');
-    document.getElementById('demo-h2').textContent = t('demo_h2');
-    document.getElementById('demo-lede').textContent = t('demo_lede');
+    setTxt('cases-kicker', 'cases_kicker');
+    setTxt('cases-h2', 'cases_h2');
+    setTxt('case-1-title', 'case_1_title');
+    setTxt('case-1-desc', 'case_1_desc');
+    setTxt('case-2-title', 'case_2_title');
+    setTxt('case-2-desc', 'case_2_desc');
+    setTxt('case-3-title', 'case_3_title');
+    setTxt('case-3-desc', 'case_3_desc');
+    setTxt('case-4-title', 'case_4_title');
+    setTxt('case-4-desc', 'case_4_desc');
 
-    document.getElementById('gate-title').textContent = t('gate_title');
-    document.getElementById('gate-label').textContent = t('gate_label');
-    nameInput.placeholder = t('gate_ph');
-    document.getElementById('gate-enter').textContent = t('gate_enter');
-    document.getElementById('gate-anon').textContent = t('gate_anon');
+    setTxt('demo-kicker', 'demo_kicker');
+    setTxt('demo-h2', 'demo_h2');
+    setTxt('demo-lede', 'demo_lede');
 
-    noteText.placeholder = t('note_ph');
-    postBtn.textContent = t('post_btn');
-    document.getElementById('lbl-who-posting').textContent = t('who_label');
-    changeNameBtn.textContent = t('change_name');
-    document.getElementById('see-more-btn').textContent = t('see_more');
-    commentTextInput.placeholder = t('comment_ph');
-    document.getElementById('footer-text').textContent = t('footer');
+    setTxt('gate-title', 'gate_title');
+    setTxt('gate-label', 'gate_label');
+    if(nameInput) nameInput.placeholder = t('gate_ph');
+    setTxt('gate-enter', 'gate_enter');
+    setTxt('gate-anon', 'gate_anon');
 
-    if(lang === 'en'){
-      langPt.className = 'inactive-lang';
-      langEn.className = 'active-lang';
-    } else {
-      langPt.className = 'active-lang';
-      langEn.className = 'inactive-lang';
+    if(noteText) noteText.placeholder = t('note_ph');
+    if(postBtn) postBtn.textContent = t('post_btn');
+    setTxt('lbl-who-posting', 'who_label');
+    if(changeNameBtn) changeNameBtn.textContent = t('change_name');
+    setTxt('see-more-btn', 'see_more');
+    if(commentTextInput) commentTextInput.placeholder = t('comment_ph');
+    setTxt('footer-text', 'footer');
+
+    if(langPt && langEn){
+      if(lang === 'en'){
+        langPt.className = 'inactive-lang';
+        langEn.className = 'active-lang';
+      } else {
+        langPt.className = 'active-lang';
+        langEn.className = 'inactive-lang';
+      }
     }
 
     if(viewerName === 'anónimo' || viewerName === 'anonymous'){
@@ -1017,7 +1053,7 @@
       const commentsCount = (note.comments || []).length;
       const readersCount = (note.readers || []).length;
       btn.innerHTML = `<span class="quote">${escapeHtml(note.text)}</span>
-        <span class="meta"><span>${escapeHtml(note.author || t('anon'))}</span><span>${readersCount} ${readUnit} · ${commentsCount} 💬</span></span>`;
+        <span class="meta"><span>${escapeHtml(note.author || t('anon'))}</span><span>${readersCount} ${readUnit} · ${commentsCount} <svg class="svg-icon" style="width:0.85em; height:0.85em; vertical-align:-0.1em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></span>`;
       btn.addEventListener('click', () => openNote(note.id));
       notesWrap.appendChild(btn);
     });
@@ -1079,12 +1115,13 @@
     modalQuote.textContent = note.text;
     modalAuthor.textContent = t('by_author', { author: escapeHtml(note.author || t('anon')), time: timeAgo(note.ts) });
     modalBackdrop.classList.add('open');
+    document.body.classList.add('modal-open');
     renderReaders(note);
     renderComments(note);
     commentTextInput.value = '';
     setHash(id);
 
-    modalShare.textContent = t('copy_link');
+    modalShare.innerHTML = t('copy_link');
     modalShare.classList.remove('copied');
 
     if(!skipRead){
@@ -1129,6 +1166,7 @@
 
   function closeModal(){
     modalBackdrop.classList.remove('open');
+    document.body.classList.remove('modal-open');
     currentNoteId = null;
     setHash(null);
   }
