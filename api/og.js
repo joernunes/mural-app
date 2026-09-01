@@ -1,14 +1,10 @@
 import { ImageResponse } from '@vercel/og';
 
-export const config = {
-  runtime: 'edge',
-};
-
 export default function handler(req) {
-  const { searchParams } = new URL(req.url);
-  const text = searchParams.get('text') || 'Uma nota no mural';
-  const author = searchParams.get('author') || 'anónimo';
-  const hue = parseInt(searchParams.get('hue') || '80', 10);
+  const url = new URL(req.url, `http://${req.headers?.host || 'localhost'}`);
+  const text = url.searchParams.get('text') || 'Uma nota no mural';
+  const author = url.searchParams.get('author') || 'anónimo';
+  const hue = parseInt(url.searchParams.get('hue') || '80', 10);
 
   const noteColor = `hsl(${hue}, 78%, 72%)`;
   const noteColorDark = `hsl(${hue}, 50%, 22%)`;
