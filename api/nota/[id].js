@@ -1,9 +1,14 @@
 import { getDb, NOTES_KEY, hueFromId, escapeHtml } from '../_db.js';
 
 export default async function handler(req, res) {
-  const { id } = req.query;
-
+  let id = req.query?.id;
   if (!id) {
+    const urlPath = (req.url || '').split('?')[0];
+    const parts = urlPath.split('/');
+    id = parts[parts.length - 1];
+  }
+
+  if (!id || id === '[id]') {
     return res.redirect(302, '/');
   }
 

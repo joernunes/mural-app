@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/nota/:id",
+      "destination": "/api/nota/[id]?id=:id"
+    }
+  ]
+}

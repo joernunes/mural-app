@@ -1,5 +1,9 @@
 import { ImageResponse } from '@vercel/og';
 
+export const config = {
+  runtime: 'edge',
+};
+
 export default function handler(req) {
   const url = new URL(req.url, `http://${req.headers?.host || 'localhost'}`);
   const text = url.searchParams.get('text') || 'Uma nota no mural';
