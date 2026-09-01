@@ -121,6 +121,16 @@
   }
   .section-light .pill-outline{ color: var(--ink); border-color: var(--line-soft); }
 
+  .lang-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:0.82rem; font-weight:600;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line);
+    border-radius:999px; padding: 7px 14px; color: var(--paper-invert);
+    cursor:pointer; transition: all 0.2s ease; display:inline-flex; align-items:center; gap:4px;
+  }
+  .lang-btn:hover{ border-color: var(--lime); color: var(--lime); }
+  .lang-btn span.active-lang{ color: var(--lime); font-weight:700; opacity:1; }
+  .lang-btn span.inactive-lang{ opacity:0.4; }
+
   .hero{ padding-top: 40px; padding-bottom: 130px; overflow:hidden; }
   .hero-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items:center; position:relative; z-index:2; }
   .hero h1{ font-size: clamp(2.6rem, 5.2vw, 4rem); line-height:1.08; max-width:12ch; }
@@ -273,9 +283,9 @@
   }
   .fb-comment-main{ display:flex; flex-direction:column; flex:1; max-width: calc(100% - 44px); }
   .fb-comment-bubble{
-    background: rgba(255, 255, 255, 0.08);
+    /* background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px; padding: 10px 14px;
+    border-radius: 18px; padding: 10px 14px; */
     display: inline-block; align-self: flex-start;
     max-width: 100%; word-break: break-word;
   }
@@ -471,8 +481,11 @@
   <div class="wrap nav">
     <span class="logo">mural</span>
     <div style="display:flex; gap:12px; align-items:center;">
-      <a href="galeria.html" class="pill-outline">ver galeria</a>
-      <a href="#precos" class="pill">criar mural</a>
+      <button id="lang-btn" class="lang-btn" title="Alterar idioma / Switch language">
+        <span id="lang-pt" class="active-lang">PT</span> | <span id="lang-en" class="inactive-lang">EN</span>
+      </button>
+      <a href="galeria.html" class="pill-outline" id="nav-gallery">ver galeria</a>
+      <a href="#demo" class="pill" id="nav-create">criar mural</a>
     </div>
   </div>
 </div>
@@ -480,12 +493,12 @@
 <section class="section-dark hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="kicker">um mural, aberto a todos</span>
-      <h1>escreve algo. deixa aqui. alguém vai encontrar.</h1>
-      <p class="lede">Mural é o teu espaço público de notas: crias um mural, partilhas o link, e qualquer pessoa pode escrever, ler o que já lá está — e ver exatamente quem já passou por ali.</p>
+      <span class="kicker" id="hero-kicker">um mural, aberto a todos</span>
+      <h1 id="hero-h1">escreve algo. deixa aqui. alguém vai encontrar.</h1>
+      <p class="lede" id="hero-lede">Mural é o teu espaço público de notas: crias um mural, partilhas o link, e qualquer pessoa pode escrever, ler o que já lá está — e ver exatamente quem já passou por ali.</p>
       <div class="hero-cta">
-        <a href="#precos" class="pill">Criar o meu mural — grátis</a>
-        <a href="#demo" class="pill-outline">experimentar agora</a>
+        <a href="#demo" class="pill" id="hero-cta-create">Criar o meu mural — grátis</a>
+        <a href="#demo" class="pill-outline" id="hero-cta-demo">experimentar agora</a>
       </div>
     </div>
     <div class="floaters" id="hero-floaters">
@@ -499,51 +512,51 @@
 
 <section class="section-light" id="sobre">
   <div class="wrap">
-    <span class="kicker">o que torna isto diferente</span>
-    <h2 style="font-size:2rem;">um placar, não uma caixa de entrada</h2>
+    <span class="kicker" id="feat-kicker">o que torna isto diferente</span>
+    <h2 style="font-size:2rem;" id="feat-h2">um placar, não uma caixa de entrada</h2>
     <div class="feat-grid">
-      <div class="feat-card"><div class="chip c1">✎</div><h3>Qualquer pessoa escreve</h3><p>Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.</p></div>
-      <div class="feat-card"><div class="chip c2">👁</div><h3>Todas as notas ficam abertas</h3><p>Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.</p></div>
-      <div class="feat-card"><div class="chip c3">✓</div><h3>Vês quem já leu</h3><p>Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.</p></div>
+      <div class="feat-card"><div class="chip c1">✎</div><h3 id="feat-1-title">Qualquer pessoa escreve</h3><p id="feat-1-desc">Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.</p></div>
+      <div class="feat-card"><div class="chip c2">👁</div><h3 id="feat-2-title">Todas as notas ficam abertas</h3><p id="feat-2-desc">Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.</p></div>
+      <div class="feat-card"><div class="chip c3">✓</div><h3 id="feat-3-title">Vês quem já leu</h3><p id="feat-3-desc">Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.</p></div>
     </div>
   </div>
 </section>
 
 <section class="section-dark-2" id="como">
   <div class="wrap">
-    <span class="kicker">como funciona</span>
-    <h2 style="font-size:2rem;">três passos, sem fricção</h2>
+    <span class="kicker" id="steps-kicker">como funciona</span>
+    <h2 style="font-size:2rem;" id="steps-h2">três passos, sem fricção</h2>
     <div class="steps">
-      <div class="step"><div class="dot">1</div><h3>Cria o teu mural</h3><p>Escolhe um nome, recebe um link único. Menos de um minuto, sem cartão de crédito.</p></div>
-      <div class="step"><div class="dot">2</div><h3>Partilha o link</h3><p>Numa rede social, num grupo, numa sala de aula, num evento ao vivo.</p></div>
-      <div class="step"><div class="dot">3</div><h3>Deixa acontecer</h3><p>As pessoas escrevem, leem, voltam para ver quem passou. Tu só acompanhas.</p></div>
+      <div class="step"><div class="dot">1</div><h3 id="step-1-title">Cria o teu mural</h3><p id="step-1-desc">Escolhe um nome, recebe um link único. Menos de um minuto, sem cartão de crédito.</p></div>
+      <div class="step"><div class="dot">2</div><h3 id="step-2-title">Partilha o link</h3><p id="step-2-desc">Numa rede social, num grupo, numa sala de aula, num evento ao vivo.</p></div>
+      <div class="step"><div class="dot">3</div><h3 id="step-3-title">Deixa acontecer</h3><p id="step-3-desc">As pessoas escrevem, leem, voltam para ver quem passou. Tu só acompanhas.</p></div>
     </div>
   </div>
 </section>
 
 <section class="section-light" id="casos">
   <div class="wrap">
-    <span class="kicker">onde isto funciona bem</span>
-    <h2 style="font-size:2rem;">feito para momentos, não para arquivos</h2>
+    <span class="kicker" id="cases-kicker">onde isto funciona bem</span>
+    <h2 style="font-size:2rem;" id="cases-h2">feito para momentos, não para arquivos</h2>
     <div class="cases-grid">
-      <div class="case"><h3>Turmas e workshops</h3><p>Um mural por sessão para dúvidas, reflexões ou feedback anónimo em tempo real.</p></div>
-      <div class="case"><h3>Casamentos e eventos</h3><p>Um livro de visitas digital que os convidados escrevem do telemóvel, sem apps.</p></div>
-      <div class="case"><h3>Lançamentos de produto</h3><p>Recolhe reações abertas do público logo no dia do lançamento.</p></div>
-      <div class="case"><h3>Comunidades online</h3><p>Um espaço partilhado onde qualquer membro deixa uma ideia para os outros lerem.</p></div>
+      <div class="case"><h3 id="case-1-title">Turmas e workshops</h3><p id="case-1-desc">Um mural por sessão para dúvidas, reflexões ou feedback anónimo em tempo real.</p></div>
+      <div class="case"><h3 id="case-2-title">Casamentos e eventos</h3><p id="case-2-desc">Um livro de visitas digital que os convidados escrevem do telemóvel, sem apps.</p></div>
+      <div class="case"><h3 id="case-3-title">Lançamentos de produto</h3><p id="case-3-desc">Recolhe reações abertas do público logo no dia do lançamento.</p></div>
+      <div class="case"><h3 id="case-4-title">Comunidades online</h3><p id="case-4-desc">Um espaço partilhado onde qualquer membro deixa uma ideia para os outros lerem.</p></div>
     </div>
   </div>
 </section>
 
 <section class="section-dark-2" id="demo">
   <div class="wrap">
-    <span class="kicker">experimenta agora mesmo</span>
-    <h2 style="font-size:2rem;">este mural é real</h2>
-    <p class="lede">O que escreveres aqui em baixo fica visível para qualquer pessoa que visite este site — é o produto a funcionar, não uma simulação. Não é privado: trata isto como um placar aberto.</p>
+    <span class="kicker" id="demo-kicker">experimenta agora mesmo</span>
+    <h2 style="font-size:2rem;" id="demo-h2">este mural é real</h2>
+    <p class="lede" id="demo-lede">O que escreveres aqui em baixo fica visível para qualquer pessoa que visite este site — é o produto a funcionar, não uma simulação. Não é privado: trata isto como um placar aberto.</p>
 
     <div class="demo-frame">
       <div id="gate" class="gate">
-        <p class="gate-title">Como te queres chamar neste mural?</p>
-        <label for="name-input">o teu nome</label>
+        <p class="gate-title" id="gate-title">Como te queres chamar neste mural?</p>
+        <label for="name-input" id="gate-label">o teu nome</label>
         <input id="name-input" class="field" type="text" maxlength="40" placeholder="ex: Joel">
         <div class="row">
           <button id="gate-enter" class="pill">entrar no mural</button>
@@ -556,13 +569,13 @@
           <textarea id="note-text" class="field" maxlength="500" placeholder="escreve o que quiseres deixar aqui..."></textarea>
           <div class="row">
             <button id="post-note" class="pill">espetar no mural</button>
-            <span class="who">a escrever como <strong id="who-name">anónimo</strong> — <button id="change-name">mudar nome</button></span>
+            <span class="who"><span id="lbl-who-posting">a escrever como</span> <strong id="who-name">anónimo</strong> — <button id="change-name">mudar nome</button></span>
           </div>
           <div id="status-msg" class="status-msg"></div>
         </div>
         <div id="notes-wrap" class="notes-wrap"><p class="empty-note">a carregar o mural...</p></div>
         <div class="see-more-wrap" id="see-more-wrap" style="display:none;">
-          <a href="galeria.html" class="pill-outline" style="gap:8px; display:inline-flex; align-items:center; text-decoration:none;">
+          <a href="galeria.html" class="pill-outline" id="see-more-btn" style="gap:8px; display:inline-flex; align-items:center; text-decoration:none;">
             explorar todos os murais
           </a>
         </div>
@@ -571,34 +584,7 @@
   </div>
 </section>
 
-<!-- <section class="section-light" id="precos">
-  <div class="wrap">
-    <span class="kicker">preços simples, sem letras pequenas</span>
-    <h2 style="font-size:2rem;">um plano para cada mural</h2>
-    <div class="pricing-grid">
-      <div class="tier">
-        <h3>Grátis</h3>
-        <div class="tier-price">0 € <span>/ sempre</span></div>
-        <ul><li>1 mural ativo</li><li>até 50 notas</li><li>quem leu, visível em cada nota</li><li>marca "feito com Mural"</li></ul>
-        <a href="#" class="pill-outline" style="border-color:var(--line-soft); color:var(--ink);">começar grátis</a>
-      </div>
-      <div class="tier featured">
-        <h3>Pro</h3>
-        <div class="tier-price">7,90 € <span>/ mês</span></div>
-        <ul><li>murais ilimitados</li><li>notas ilimitadas</li><li>sem marca "feito com Mural"</li><li>estatísticas de leitura por nota</li><li>exportar todas as notas</li></ul>
-        <a href="#" class="pill">escolher Pro</a>
-      </div>
-      <div class="tier">
-        <h3>Negócio</h3>
-        <div class="tier-price">24 € <span>/ mês</span></div>
-        <ul><li>tudo do Pro</li><li>domínio próprio</li><li>moderação e palavras bloqueadas</li><li>suporte prioritário</li></ul>
-        <a href="#" class="pill-outline" style="border-color:var(--line-soft); color:var(--ink);">falar connosco</a>
-      </div>
-    </div>
-  </div>
-</section> -->
-
-<footer>um placar aberto para quem ainda gosta de deixar um rasto</footer>
+<footer id="footer-text">um placar aberto para quem ainda gosta de deixar um rasto</footer>
 
 <!-- Note detail modal -->
 <div id="modal-backdrop" class="modal-backdrop">
@@ -623,7 +609,7 @@
       </div>
 
       <div class="modal-actions">
-        <button id="modal-share" class="btn-share">🔗 copiar link com imagem</button>
+        <button id="modal-share" class="btn-share">🔗 copiar link</button>
       </div>
     </div>
   </div>
@@ -639,11 +625,168 @@
   const STICKY_COLORS = ['var(--lime)','var(--pink)','var(--sky)','var(--orange)'];
   const GALLERY_COLORS = ['#c6f135','#ff4fa3','#5ed0f0','#ff8a5b','#f0d05e','#a78bfa','#34d399','#fb923c'];
   const NAME_KEY = 'mural-viewer-name';
+  const LANG_KEY = 'mural-lang';
   const API = '/api/notes';
+
+  const i18n = {
+    pt: {
+      page_title: "Mural — escreve. deixa. alguém vai encontrar.",
+      nav_gallery: "ver galeria",
+      nav_create: "criar mural",
+      hero_kicker: "um mural, aberto a todos",
+      hero_h1: "escreve algo. deixa aqui. alguém vai encontrar.",
+      hero_lede: "Mural é o teu espaço público de notas: crias um mural, partilhas o link, e qualquer pessoa pode escrever, ler o que já lá está — e ver exatamente quem já passou por ali.",
+      hero_cta_create: "Criar o meu mural — grátis",
+      hero_cta_demo: "experimentar agora",
+      feat_kicker: "o que torna isto diferente",
+      feat_h2: "um placar, não uma caixa de entrada",
+      feat_1_title: "Qualquer pessoa escreve",
+      feat_1_desc: "Sem conta, sem palavra-passe. Quem tem o link do teu mural pode deixar uma nota em segundos.",
+      feat_2_title: "Todas as notas ficam abertas",
+      feat_2_desc: "Nada de caixas privadas — o mural é um placar público, visível para quem passar por ali.",
+      feat_3_title: "Vês quem já leu",
+      feat_3_desc: "Cada nota guarda a lista de quem a abriu. Um efeito simples que transforma leitura em conversa.",
+      steps_kicker: "como funciona",
+      steps_h2: "três passos, sem fricção",
+      step_1_title: "Cria o teu mural",
+      step_1_desc: "Escolhe um nome, recebe um link único. Menos de um minuto, sem cartão de crédito.",
+      step_2_title: "Partilha o link",
+      step_2_desc: "Numa rede social, num grupo, numa sala de aula, num evento ao vivo.",
+      step_3_title: "Deixa acontecer",
+      step_3_desc: "As pessoas escrevem, leem, voltam para ver quem passou. Tu só acompanhas.",
+      cases_kicker: "onde isto funciona bem",
+      cases_h2: "feito para momentos, não para arquivos",
+      case_1_title: "Turmas e workshops",
+      case_1_desc: "Um mural por sessão para dúvidas, reflexões ou feedback anónimo em tempo real.",
+      case_2_title: "Casamentos e eventos",
+      case_2_desc: "Um livro de visitas digital que os convidados escrevem do telemóvel, sem apps.",
+      case_3_title: "Lançamentos de produto",
+      case_3_desc: "Recolhe reações abertas do público logo no dia do lançamento.",
+      case_4_title: "Comunidades online",
+      case_4_desc: "Um espaço partilhado onde qualquer membro deixa uma ideia para os outros lerem.",
+      demo_kicker: "experimenta agora mesmo",
+      demo_h2: "este mural é real",
+      demo_lede: "O que escreveres aqui em baixo fica visível para qualquer pessoa que visite este site — é o produto a funcionar, não uma simulação. Não é privado: trata isto como um placar aberto.",
+      gate_title: "Como te queres chamar neste mural?",
+      gate_label: "o teu nome",
+      gate_ph: "ex: Joel",
+      gate_enter: "entrar no mural",
+      gate_anon: "continuar como anónimo",
+      note_ph: "escreve o que quiseres deixar aqui...",
+      post_btn: "espetar no mural",
+      who_label: "a escrever como",
+      change_name: "mudar nome",
+      see_more: "explorar todos os murais",
+      by_author: "deixado por {author} · {time}",
+      who_read: "quem já leu:",
+      no_readers: "ainda ninguém — és a primeira pessoa a ler",
+      responses: "💬 Respostas ({count})",
+      no_comments: "ainda sem respostas — sê a primeira pessoa a responder.",
+      comment_ph: "Escreve uma resposta...",
+      copy_link: "🔗 copiar link",
+      link_copied: "✓ link copiado!",
+      toast_copied: "link com preview de imagem copiado ✓",
+      toast_comment_ok: "resposta enviada ✓",
+      toast_comment_err: "erro ao enviar resposta",
+      empty_loading: "a carregar o mural...",
+      empty_error: "não consegui ligar ao mural — verifica se a base de dados KV está ligada ao projeto na Vercel.",
+      empty_none: "ainda ninguém escreveu nada — sê a primeira pessoa.",
+      status_empty: "escreve algo antes de espetar no mural.",
+      status_saving: "a guardar...",
+      status_posted: "ficou espetado no mural.",
+      status_err: "não consegui guardar — verifica a ligação à base de dados.",
+      footer: "um placar aberto para quem ainda gosta de deixar um rasto",
+      anon: "anónimo",
+      like: "Gostar",
+      liked: "Gostei ♥",
+      time_just_now: "agora mesmo",
+      time_min: "há {n}min",
+      time_hour: "há {n}h",
+      time_day: "há {n}d",
+      time_month: "há {n}mês(es)"
+    },
+    en: {
+      page_title: "Mural — write it. leave it. someone will find it.",
+      nav_gallery: "view gallery",
+      nav_create: "create mural",
+      hero_kicker: "a digital board open to everyone",
+      hero_h1: "write something. leave it here. someone will find it.",
+      hero_lede: "Mural is your public note space: create a board, share the link, and anyone can post, read existing notes — and see who dropped by.",
+      hero_cta_create: "Create my mural — free",
+      hero_cta_demo: "try it now",
+      feat_kicker: "what makes this different",
+      feat_h2: "a public board, not an inbox",
+      feat_1_title: "Anyone can post",
+      feat_1_desc: "No accounts, no passwords. Anyone with your mural link can pin a note in seconds.",
+      feat_2_title: "All notes remain open",
+      feat_2_desc: "No private inboxes — the mural is a public billboard open to anyone passing by.",
+      feat_3_title: "See who read your note",
+      feat_3_desc: "Every note keeps track of who opened it. A simple effect that turns reading into connection.",
+      steps_kicker: "how it works",
+      steps_h2: "three friction-free steps",
+      step_1_title: "Create your mural",
+      step_1_desc: "Pick a name, get a unique link. Under a minute, no credit card required.",
+      step_2_title: "Share the link",
+      step_2_desc: "On social media, in a group chat, classroom, or live event.",
+      step_3_title: "Let it unfold",
+      step_3_desc: "People write, read, and return to see who visited. You just watch it grow.",
+      cases_kicker: "where this shines",
+      cases_h2: "built for moments, not archives",
+      case_1_title: "Classes & workshops",
+      case_1_desc: "A mural per session for questions, thoughts, or real-time anonymous feedback.",
+      case_2_title: "Weddings & events",
+      case_2_desc: "A digital guestbook guests write from their phones, zero apps required.",
+      case_3_title: "Product launches",
+      case_3_desc: "Gather open public reactions from day one.",
+      case_4_title: "Online communities",
+      case_4_desc: "A shared board where any member leaves an idea for others to discover.",
+      demo_kicker: "try it right now",
+      demo_h2: "this mural is live",
+      demo_lede: "Whatever you write below is visible to anyone visiting this site — it's the real product running live. It is not private: treat it as a public board.",
+      gate_title: "What name do you want to use on this mural?",
+      gate_label: "your name",
+      gate_ph: "e.g. Joel",
+      gate_enter: "enter mural",
+      gate_anon: "continue as anonymous",
+      note_ph: "write whatever you want to leave here...",
+      post_btn: "pin to mural",
+      who_label: "posting as",
+      change_name: "change name",
+      see_more: "explore all murals",
+      by_author: "left by {author} · {time}",
+      who_read: "who has read:",
+      no_readers: "nobody yet — you're the first to read",
+      responses: "💬 Replies ({count})",
+      no_comments: "no replies yet — be the first to reply.",
+      comment_ph: "Write a reply...",
+      copy_link: "🔗 copy link",
+      link_copied: "✓ link copied!",
+      toast_copied: "link with image preview copied ✓",
+      toast_comment_ok: "reply sent ✓",
+      toast_comment_err: "error sending reply",
+      empty_loading: "loading the mural...",
+      empty_error: "could not connect to mural — check if KV database is linked on Vercel.",
+      empty_none: "nobody has written anything yet — be the first.",
+      status_empty: "write something before pinning to mural.",
+      status_saving: "saving...",
+      status_posted: "pinned to the mural.",
+      status_err: "could not save — check database connection.",
+      footer: "an open board for those who still like to leave a trace",
+      anon: "anonymous",
+      like: "Like",
+      liked: "Liked ♥",
+      time_just_now: "just now",
+      time_min: "{n}m ago",
+      time_hour: "{n}h ago",
+      time_day: "{n}d ago",
+      time_month: "{n}mo ago"
+    }
+  };
 
   let viewerName = null;
   let notes = [];
   let currentNoteId = null;
+  let currentLang = 'pt';
 
   // --- DOM refs ---
   const gate = document.getElementById('gate');
@@ -658,7 +801,6 @@
   const statusMsg = document.getElementById('status-msg');
   const notesWrap = document.getElementById('notes-wrap');
   const seeMoreWrap = document.getElementById('see-more-wrap');
-  const openGalleryBtn = document.getElementById('open-gallery-btn');
   const modalBackdrop = document.getElementById('modal-backdrop');
   const modalQuote = document.getElementById('modal-quote');
   const modalAuthor = document.getElementById('modal-author');
@@ -670,6 +812,104 @@
   const commentTextInput = document.getElementById('comment-text-input');
   const postCommentBtn = document.getElementById('post-comment-btn');
   const toast = document.getElementById('toast');
+  const langBtn = document.getElementById('lang-btn');
+  const langPt = document.getElementById('lang-pt');
+  const langEn = document.getElementById('lang-en');
+
+  function t(key, params){
+    let str = (i18n[currentLang] && i18n[currentLang][key]) || i18n.pt[key] || key;
+    if(params){
+      Object.keys(params).forEach(k => {
+        str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]);
+      });
+    }
+    return str;
+  }
+
+  function applyLanguage(lang){
+    currentLang = lang || 'pt';
+    try { localStorage.setItem(LANG_KEY, currentLang); } catch(e){}
+    document.title = t('page_title');
+
+    document.getElementById('nav-gallery').textContent = t('nav_gallery');
+    document.getElementById('nav-create').textContent = t('nav_create');
+
+    document.getElementById('hero-kicker').textContent = t('hero_kicker');
+    document.getElementById('hero-h1').textContent = t('hero_h1');
+    document.getElementById('hero-lede').textContent = t('hero_lede');
+    document.getElementById('hero-cta-create').textContent = t('hero_cta_create');
+    document.getElementById('hero-cta-demo').textContent = t('hero_cta_demo');
+
+    document.getElementById('feat-kicker').textContent = t('feat_kicker');
+    document.getElementById('feat-h2').textContent = t('feat_h2');
+    document.getElementById('feat-1-title').textContent = t('feat_1_title');
+    document.getElementById('feat-1-desc').textContent = t('feat_1_desc');
+    document.getElementById('feat-2-title').textContent = t('feat_2_title');
+    document.getElementById('feat-2-desc').textContent = t('feat_2_desc');
+    document.getElementById('feat-3-title').textContent = t('feat_3_title');
+    document.getElementById('feat-3-desc').textContent = t('feat_3_desc');
+
+    document.getElementById('steps-kicker').textContent = t('steps_kicker');
+    document.getElementById('steps-h2').textContent = t('steps_h2');
+    document.getElementById('step-1-title').textContent = t('step_1_title');
+    document.getElementById('step-1-desc').textContent = t('step_1_desc');
+    document.getElementById('step-2-title').textContent = t('step_2_title');
+    document.getElementById('step-2-desc').textContent = t('step_2_desc');
+    document.getElementById('step-3-title').textContent = t('step_3_title');
+    document.getElementById('step-3-desc').textContent = t('step_3_desc');
+
+    document.getElementById('cases-kicker').textContent = t('cases_kicker');
+    document.getElementById('cases-h2').textContent = t('cases_h2');
+    document.getElementById('case-1-title').textContent = t('case_1_title');
+    document.getElementById('case-1-desc').textContent = t('case_1_desc');
+    document.getElementById('case-2-title').textContent = t('case_2_title');
+    document.getElementById('case-2-desc').textContent = t('case_2_desc');
+    document.getElementById('case-3-title').textContent = t('case_3_title');
+    document.getElementById('case-3-desc').textContent = t('case_3_desc');
+    document.getElementById('case-4-title').textContent = t('case_4_title');
+    document.getElementById('case-4-desc').textContent = t('case_4_desc');
+
+    document.getElementById('demo-kicker').textContent = t('demo_kicker');
+    document.getElementById('demo-h2').textContent = t('demo_h2');
+    document.getElementById('demo-lede').textContent = t('demo_lede');
+
+    document.getElementById('gate-title').textContent = t('gate_title');
+    document.getElementById('gate-label').textContent = t('gate_label');
+    nameInput.placeholder = t('gate_ph');
+    document.getElementById('gate-enter').textContent = t('gate_enter');
+    document.getElementById('gate-anon').textContent = t('gate_anon');
+
+    noteText.placeholder = t('note_ph');
+    postBtn.textContent = t('post_btn');
+    document.getElementById('lbl-who-posting').textContent = t('who_label');
+    changeNameBtn.textContent = t('change_name');
+    document.getElementById('see-more-btn').textContent = t('see_more');
+    commentTextInput.placeholder = t('comment_ph');
+    document.getElementById('footer-text').textContent = t('footer');
+
+    if(lang === 'en'){
+      langPt.className = 'inactive-lang';
+      langEn.className = 'active-lang';
+    } else {
+      langPt.className = 'active-lang';
+      langEn.className = 'inactive-lang';
+    }
+
+    if(viewerName === 'anónimo' || viewerName === 'anonymous'){
+      viewerName = t('anon');
+      whoName.textContent = viewerName;
+    }
+
+    renderNotes();
+    if(currentNoteId){
+      const n = notes.find(item => item.id === currentNoteId);
+      if(n){
+        renderComments(n);
+        renderReaders(n);
+        modalAuthor.textContent = t('by_author', { author: escapeHtml(n.author || t('anon')), time: timeAgo(n.ts) });
+      }
+    }
+  }
 
   // --- Utilities ---
   function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
@@ -703,13 +943,13 @@
   function timeAgo(ts){
     const diff = Date.now() - ts;
     const mins = Math.floor(diff / 60000);
-    if(mins < 1) return 'agora mesmo';
-    if(mins < 60) return `há ${mins}min`;
+    if(mins < 1) return t('time_just_now');
+    if(mins < 60) return t('time_min', { n: mins });
     const hours = Math.floor(mins / 60);
-    if(hours < 24) return `há ${hours}h`;
+    if(hours < 24) return t('time_hour', { n: hours });
     const days = Math.floor(hours / 24);
-    if(days < 30) return `há ${days}d`;
-    return `há ${Math.floor(days/30)}mês(es)`;
+    if(days < 30) return t('time_day', { n: days });
+    return t('time_month', { n: Math.floor(days/30) });
   }
 
   // --- API ---
@@ -756,26 +996,28 @@
   // --- Render demo notes ---
   function renderNotes(){
     if(notes === null){
-      notesWrap.innerHTML = '<p class="empty-note">não consegui ligar ao mural — verifica se a base de dados KV está ligada ao projeto na Vercel.</p>';
+      notesWrap.innerHTML = `<p class="empty-note">${escapeHtml(t('empty_error'))}</p>`;
       seeMoreWrap.style.display = 'none';
       return;
     }
     if(!notes.length){
-      notesWrap.innerHTML = '<p class="empty-note">ainda ninguém escreveu nada — sê a primeira pessoa.</p>';
+      notesWrap.innerHTML = `<p class="empty-note">${escapeHtml(t('empty_none'))}</p>`;
       seeMoreWrap.style.display = 'none';
       return;
     }
     const sorted = [...notes].sort((a,b) => b.ts - a.ts);
     notesWrap.innerHTML = '';
     const preview = sorted.slice(0, 8);
+    const readUnit = currentLang === 'en' ? 'R' : 'L';
     preview.forEach((note) => {
       const btn = document.createElement('button');
       btn.className = 'sticky';
       btn.style.background = uniqueColorForNote(note.id);
       btn.style.transform = `rotate(${rotationFor(note.id)}deg)`;
       const commentsCount = (note.comments || []).length;
+      const readersCount = (note.readers || []).length;
       btn.innerHTML = `<span class="quote">${escapeHtml(note.text)}</span>
-        <span class="meta"><span>${escapeHtml(note.author || 'anónimo')}</span><span>${(note.readers||[]).length} L · ${commentsCount} 💬</span></span>`;
+        <span class="meta"><span>${escapeHtml(note.author || t('anon'))}</span><span>${readersCount} ${readUnit} · ${commentsCount} 💬</span></span>`;
       btn.addEventListener('click', () => openNote(note.id));
       notesWrap.appendChild(btn);
     });
@@ -794,8 +1036,9 @@
   function renderComments(note){
     const comments = note.comments || [];
     modalCommentsCount.textContent = comments.length;
+    document.querySelector('.comments-title').innerHTML = t('responses', { count: comments.length });
 
-    const vName = viewerName || loadViewerName() || 'anónimo';
+    const vName = viewerName || loadViewerName() || t('anon');
     const vInitial = vName.charAt(0).toUpperCase();
     const vAvatar = document.getElementById('viewer-avatar');
     if(vAvatar){
@@ -804,11 +1047,11 @@
     }
 
     if(!comments.length){
-      modalCommentsList.innerHTML = '<p style="font-family:\'IBM Plex Mono\', monospace; font-size:0.8rem; color:var(--muted-invert); margin:6px 0 12px;">ainda sem respostas — sê a primeira pessoa a responder.</p>';
+      modalCommentsList.innerHTML = `<p style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--muted-invert); margin:6px 0 12px;">${escapeHtml(t('no_comments'))}</p>`;
       return;
     }
     modalCommentsList.innerHTML = comments.map(c => {
-      const authorName = c.author || 'anónimo';
+      const authorName = c.author || t('anon');
       const initial = authorName.charAt(0).toUpperCase();
       const avatarBg = uniqueColorForNote(c.id || authorName);
       return `
@@ -821,7 +1064,7 @@
             </div>
             <div class="fb-meta">
               <span class="fb-time">${timeAgo(c.ts)}</span>
-              <button class="fb-like" onclick="this.classList.toggle('liked'); this.textContent = this.classList.contains('liked') ? 'Gostei ♥' : 'Gostar';">Gostar</button>
+              <button class="fb-like" onclick="this.classList.toggle('liked'); this.textContent = this.classList.contains('liked') ? '${escapeHtml(t('liked'))}' : '${escapeHtml(t('like'))}';">${escapeHtml(t('like'))}</button>
             </div>
           </div>
         </div>
@@ -834,19 +1077,18 @@
     if(!note) return;
     currentNoteId = id;
     modalQuote.textContent = note.text;
-    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'} · ${timeAgo(note.ts)}`;
+    modalAuthor.textContent = t('by_author', { author: escapeHtml(note.author || t('anon')), time: timeAgo(note.ts) });
     modalBackdrop.classList.add('open');
     renderReaders(note);
     renderComments(note);
     commentTextInput.value = '';
     setHash(id);
 
-    // Reset share button
-    modalShare.textContent = '🔗 copiar link com imagem';
+    modalShare.textContent = t('copy_link');
     modalShare.classList.remove('copied');
 
     if(!skipRead){
-      const readerName = viewerName || 'anónimo';
+      const readerName = viewerName || t('anon');
       note.readers = note.readers || [];
       if(!note.readers.includes(readerName)){
         note.readers.push(readerName);
@@ -857,6 +1099,34 @@
     }
   }
 
+  async function handleAddComment(){
+    if(!currentNoteId) return;
+    const text = commentTextInput.value.trim();
+    if(!text) return;
+    const note = notes.find(n => n.id === currentNoteId);
+    if(!note) return;
+
+    postCommentBtn.disabled = true;
+    const comment = await postComment(currentNoteId, text, viewerName || t('anon'));
+    postCommentBtn.disabled = false;
+
+    if(comment){
+      note.comments = note.comments || [];
+      note.comments.push(comment);
+      renderComments(note);
+      renderNotes();
+      commentTextInput.value = '';
+      showToast(t('toast_comment_ok'));
+    } else {
+      showToast(t('toast_comment_err'));
+    }
+  }
+
+  postCommentBtn.addEventListener('click', handleAddComment);
+  commentTextInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') handleAddComment();
+  });
+
   function closeModal(){
     modalBackdrop.classList.remove('open');
     currentNoteId = null;
@@ -865,7 +1135,8 @@
 
   function renderReaders(note){
     const readers = note.readers || [];
-    if(!readers.length){ modalReaders.innerHTML = '<span>ainda ninguém — és a primeira pessoa a ler</span>'; return; }
+    document.querySelector('.readers-title').textContent = t('who_read');
+    if(!readers.length){ modalReaders.innerHTML = `<span>${escapeHtml(t('no_readers'))}</span>`; return; }
     modalReaders.innerHTML = readers.map(r => `<span>${escapeHtml(r)}</span>`).join('');
   }
 
@@ -875,9 +1146,9 @@
     const url = getShareUrl(currentNoteId);
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(url).then(() => {
-        modalShare.innerHTML = '✓ link copiado!';
+        modalShare.innerHTML = t('link_copied');
         modalShare.classList.add('copied');
-        showToast('link com preview de imagem copiado ✓');
+        showToast(t('toast_copied'));
       }).catch(() => {
         fallbackCopy(url);
       });
@@ -890,9 +1161,9 @@
     const ta = document.createElement('textarea');
     ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); showToast('link copiado ✓'); }catch(e){}
+    try{ document.execCommand('copy'); showToast(t('toast_copied')); }catch(e){}
     document.body.removeChild(ta);
-    modalShare.innerHTML = '✓ link copiado!';
+    modalShare.innerHTML = t('link_copied');
     modalShare.classList.add('copied');
   }
 
@@ -903,6 +1174,12 @@
     if(e.key === 'Escape' && modalBackdrop.classList.contains('open')){
       closeModal();
     }
+  });
+
+  // Language toggle handling
+  langBtn.addEventListener('click', () => {
+    const nextLang = currentLang === 'pt' ? 'en' : 'pt';
+    applyLanguage(nextLang);
   });
 
   // --- Hero dynamic floaters ---
@@ -924,7 +1201,7 @@
         const truncated = note.text.length > 60 ? note.text.slice(0,57) + '…' : note.text;
         floaters[i].style.background = uniqueColorForNote(note.id);
         floaters[i].style.cursor = 'pointer';
-        floaters[i].innerHTML = `${escapeHtml(truncated)}<span class="tag">— ${escapeHtml(note.author || 'anónimo')}</span>`;
+        floaters[i].innerHTML = `${escapeHtml(truncated)}<span class="tag">— ${escapeHtml(note.author || t('anon'))}</span>`;
         floaters[i].onclick = () => openNote(note.id);
       });
     }catch(e){ /* silently keep defaults */ }
@@ -948,7 +1225,6 @@
     const noteId = getHashNoteId();
     if(!noteId) return;
 
-    // Make sure notes are loaded
     if(!notes || !notes.length){
       notes = await loadNotes();
     }
@@ -956,72 +1232,70 @@
 
     const note = notes.find(n => n.id === noteId);
     if(note){
-      // Open directly without asking for name (frictionless read)
       openNote(noteId, true);
     }
   }
 
   // --- Mural entry ---
   async function enterMural(name){
-    viewerName = name || 'anónimo';
+    viewerName = name || t('anon');
     saveViewerName(viewerName);
     whoName.textContent = viewerName;
     gate.style.display = 'none';
     muralBody.style.display = 'block';
     statusMsg.textContent = '';
-    notesWrap.innerHTML = '<p class="empty-note">a carregar o mural...</p>';
+    notesWrap.innerHTML = `<p class="empty-note">${escapeHtml(t('empty_loading'))}</p>`;
     notes = await loadNotes();
     renderNotes();
   }
 
-  gateEnter.addEventListener('click', () => { const val = nameInput.value.trim(); enterMural(val || 'anónimo'); });
-  gateAnon.addEventListener('click', () => enterMural('anónimo'));
+  gateEnter.addEventListener('click', () => { const val = nameInput.value.trim(); enterMural(val || t('anon')); });
+  gateAnon.addEventListener('click', () => enterMural(t('anon')));
   nameInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') gateEnter.click(); });
 
   changeNameBtn.addEventListener('click', () => {
     muralBody.style.display = 'none';
     gate.style.display = 'block';
-    nameInput.value = viewerName === 'anónimo' ? '' : viewerName;
+    nameInput.value = (viewerName === 'anónimo' || viewerName === 'anonymous') ? '' : viewerName;
     nameInput.focus();
   });
 
   postBtn.addEventListener('click', async () => {
     const text = noteText.value.trim();
-    if(!text){ statusMsg.textContent = 'escreve algo antes de espetar no mural.'; return; }
+    if(!text){ statusMsg.textContent = t('status_empty'); return; }
     postBtn.disabled = true;
-    statusMsg.textContent = 'a guardar...';
-    const ok = await postNote(text, viewerName || 'anónimo');
+    statusMsg.textContent = t('status_saving');
+    const ok = await postNote(text, viewerName || t('anon'));
     postBtn.disabled = false;
     if(ok){
       noteText.value = '';
-      statusMsg.textContent = 'ficou espetado no mural.';
+      statusMsg.textContent = t('status_posted');
       notes = await loadNotes();
       renderNotes();
       setTimeout(() => { statusMsg.textContent = ''; }, 2500);
     }else{
-      statusMsg.textContent = 'não consegui guardar — verifica a ligação à base de dados.';
+      statusMsg.textContent = t('status_err');
     }
   });
 
   // --- Init ---
   (async function init(){
-    // Populate hero floaters with real data
+    const savedLang = localStorage.getItem(LANG_KEY) || (navigator.language.startsWith('pt') ? 'pt' : 'en');
+    currentLang = savedLang;
+    applyLanguage(currentLang);
+
     populateHeroFloaters();
 
-    // Check for saved name
     const saved = loadViewerName();
     if(saved){
       await enterMural(saved);
     } else {
-      // Pre-load notes for deep-link
       notes = await loadNotes();
     }
 
-    // Handle deep-link
     await handleDeepLink();
   })();
 
-  // Handle hash changes (browser back/forward)
   window.addEventListener('hashchange', () => {
     const hash = window.location.hash;
     if(hash === '#galeria'){

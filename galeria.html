@@ -130,6 +130,33 @@
   }
   .pill-outline:hover{ border-color: var(--paper-invert); }
 
+  .lang-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:0.82rem; font-weight:600;
+    background: rgba(255,255,255,0.06); border:1px solid var(--line);
+    border-radius:999px; padding: 7px 14px; color: var(--paper-invert);
+    cursor:pointer; transition: all 0.2s ease; display:inline-flex; align-items:center; gap:4px;
+  }
+  .lang-btn:hover{ border-color: var(--lime); color: var(--lime); }
+  .lang-btn span.active-lang{ color: var(--lime); font-weight:700; opacity:1; }
+  .lang-btn span.inactive-lang{ opacity:0.4; }
+
+  .filter-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:28px; gap:16px; flex-wrap:wrap;
+  }
+  .sort-options{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .sort-chip{
+    font-family:'Space Grotesk', sans-serif; font-size:0.85rem; font-weight:600;
+    background: rgba(255,255,255,0.05); border:1px solid var(--line);
+    border-radius:999px; padding: 8px 18px; color: var(--muted-invert);
+    cursor:pointer; transition: all 0.2s ease; display:inline-flex; align-items:center; gap:6px;
+  }
+  .sort-chip:hover{ border-color: rgba(255,255,255,0.3); color: var(--paper-invert); }
+  .sort-chip.active{
+    background: var(--lime); color: var(--ink); border-color: var(--lime);
+    box-shadow: 0 4px 14px rgba(198,241,53,0.25);
+  }
+
   /* Main Container */
   .main{ flex:1; max-width:1200px; width:100%; margin:0 auto; padding: 40px 32px 80px; }
 
@@ -242,9 +269,9 @@
   }
   .fb-comment-main{ display:flex; flex-direction:column; flex:1; max-width: calc(100% - 44px); }
   .fb-comment-bubble{
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px; padding: 10px 14px;
+    /* background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    border-radius: 18px; padding: 10px 14px;*/
     display: inline-block; align-self: flex-start;
     max-width: 100%; word-break: break-word;
   }
@@ -323,20 +350,33 @@
 <header class="header">
   <div class="header-inner">
     <div class="header-left">
-      <a href="/" class="logo">mural <span>galeria</span></a>
+      <a href="/" class="logo">mural <span id="logo-tag">galeria</span></a>
       <div class="stats">
-        <span><span class="stat-val" id="stat-notes">0</span>notas</span>
-        <span><span class="stat-val" id="stat-readers">0</span>leituras</span>
+        <span><span class="stat-val" id="stat-notes">0</span><span id="label-notes">notas</span></span>
+        <span><span class="stat-val" id="stat-readers">0</span><span id="label-readers">leituras</span></span>
       </div>
     </div>
     <input id="search-input" class="search-box" type="text" placeholder="pesquisar notas ou autores...">
-    
+    <div class="nav-btns">
+      <button id="lang-btn" class="lang-btn" title="Alterar idioma / Switch language">
+        <span id="lang-pt" class="active-lang">PT</span> | <span id="lang-en" class="inactive-lang">EN</span>
+      </button>
+      <a href="/" class="pill-outline" id="home-link">← mural</a>
+    </div>
   </div>
 </header>
 
 <main class="main">
+  <div class="filter-bar">
+    <div class="sort-options">
+      <button class="sort-chip active" data-sort="recent" id="btn-sort-recent">🕒 <span id="lbl-sort-recent">mais recentes</span></button>
+      <button class="sort-chip" data-sort="reads" id="btn-sort-reads">👁️ <span id="lbl-sort-reads">mais lidas</span></button>
+      <button class="sort-chip" data-sort="comments" id="btn-sort-comments">💬 <span id="lbl-sort-comments">mais comentadas</span></button>
+      <button class="sort-chip" data-sort="random" id="btn-sort-random">🎲 <span id="lbl-sort-random">aleatórias</span></button>
+    </div>
+  </div>
   <div id="gallery-grid" class="gallery-grid">
-    <p class="empty-msg">a carregar o mural...</p>
+    <p class="empty-msg" id="empty-msg">a carregar o mural...</p>
   </div>
 </main>
 
@@ -365,7 +405,7 @@
       </div>
 
       <div class="modal-actions">
-        <button id="modal-share" class="btn-share">🔗 copiar link com imagem</button>
+        <button id="modal-share" class="btn-share">🔗 copiar link</button>
       </div>
     </div>
   </div>
@@ -376,11 +416,88 @@
 <script>
 (function(){
   const NAME_KEY = 'mural-viewer-name';
+  const LANG_KEY = 'mural-lang';
   const API = '/api/notes';
+
+  const i18n = {
+    pt: {
+      page_title: "Galeria de Murais — todas as notas num só lugar | Mural",
+      logo_tag: "galeria",
+      notes: "notas",
+      reads: "leituras",
+      search_ph: "pesquisar notas ou autores...",
+      home_btn: "← mural",
+      sort_recent: "mais recentes",
+      sort_reads: "mais lidas",
+      sort_comments: "mais comentadas",
+      sort_random: "aleatórias",
+      empty_loading: "a carregar o mural...",
+      empty_error: "não consegui carregar as notas do mural.",
+      empty_none: "nenhuma nota encontrada.",
+      by_author: "deixado por {author} · {time}",
+      who_read: "quem já leu:",
+      no_readers: "ainda ninguém — és a primeira pessoa a ler",
+      responses: "💬 Respostas ({count})",
+      no_comments: "ainda sem respostas — sê a primeira pessoa a responder.",
+      comment_ph: "Escreve uma resposta...",
+      copy_link: "🔗 copiar link",
+      link_copied: "✓ link copiado!",
+      toast_copied: "link com preview de imagem copiado ✓",
+      toast_comment_ok: "resposta enviada ✓",
+      toast_comment_err: "erro ao enviar resposta",
+      footer: "um placar aberto para quem ainda gosta de deixar um rasto",
+      anon: "anónimo",
+      like: "Gostar",
+      liked: "Gostei ♥",
+      time_just_now: "agora mesmo",
+      time_min: "há {n}min",
+      time_hour: "há {n}h",
+      time_day: "há {n}d",
+      time_month: "há {n}mês(es)"
+    },
+    en: {
+      page_title: "Mural Gallery — all notes in one place | Mural",
+      logo_tag: "gallery",
+      notes: "notes",
+      reads: "reads",
+      search_ph: "search notes or authors...",
+      home_btn: "← mural",
+      sort_recent: "newest",
+      sort_reads: "most read",
+      sort_comments: "most commented",
+      sort_random: "random",
+      empty_loading: "loading the mural...",
+      empty_error: "could not load notes from mural.",
+      empty_none: "no notes found.",
+      by_author: "left by {author} · {time}",
+      who_read: "who has read:",
+      no_readers: "nobody yet — you're the first to read",
+      responses: "💬 Replies ({count})",
+      no_comments: "no replies yet — be the first to reply.",
+      comment_ph: "Write a reply...",
+      copy_link: "🔗 copy link",
+      link_copied: "✓ link copied!",
+      toast_copied: "link with image preview copied ✓",
+      toast_comment_ok: "reply sent ✓",
+      toast_comment_err: "error sending reply",
+      footer: "an open board for those who still like to leave a trace",
+      anon: "anonymous",
+      like: "Like",
+      liked: "Liked ♥",
+      time_just_now: "just now",
+      time_min: "{n}m ago",
+      time_hour: "{n}h ago",
+      time_day: "{n}d ago",
+      time_month: "{n}mo ago"
+    }
+  };
 
   let viewerName = null;
   let notes = [];
   let currentNoteId = null;
+  let currentSort = 'recent';
+  let currentLang = 'pt';
+  let randomSeedMap = {};
 
   const galleryGrid = document.getElementById('gallery-grid');
   const searchInput = document.getElementById('search-input');
@@ -397,6 +514,57 @@
   const commentTextInput = document.getElementById('comment-text-input');
   const postCommentBtn = document.getElementById('post-comment-btn');
   const toast = document.getElementById('toast');
+  const langBtn = document.getElementById('lang-btn');
+  const langPt = document.getElementById('lang-pt');
+  const langEn = document.getElementById('lang-en');
+
+  function t(key, params){
+    let str = (i18n[currentLang] && i18n[currentLang][key]) || i18n.pt[key] || key;
+    if(params){
+      Object.keys(params).forEach(k => {
+        str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]);
+      });
+    }
+    return str;
+  }
+
+  function applyLanguage(lang){
+    currentLang = lang || 'pt';
+    try { localStorage.setItem(LANG_KEY, currentLang); } catch(e){}
+    document.title = t('page_title');
+
+    document.getElementById('logo-tag').textContent = t('logo_tag');
+    document.getElementById('label-notes').textContent = t('notes');
+    document.getElementById('label-readers').textContent = t('reads');
+    searchInput.placeholder = t('search_ph');
+    document.getElementById('home-link').textContent = t('home_btn');
+
+    document.getElementById('lbl-sort-recent').textContent = t('sort_recent');
+    document.getElementById('lbl-sort-reads').textContent = t('sort_reads');
+    document.getElementById('lbl-sort-comments').textContent = t('sort_comments');
+    document.getElementById('lbl-sort-random').textContent = t('sort_random');
+    commentTextInput.placeholder = t('comment_ph');
+
+    if(lang === 'en'){
+      langPt.className = 'inactive-lang';
+      langEn.className = 'active-lang';
+    } else {
+      langPt.className = 'active-lang';
+      langEn.className = 'inactive-lang';
+    }
+
+    if(notes && notes.length){
+      renderGallery(notes);
+      if(currentNoteId){
+        const n = notes.find(item => item.id === currentNoteId);
+        if(n){
+          renderComments(n);
+          renderReaders(n);
+          modalAuthor.textContent = t('by_author', { author: escapeHtml(n.author || t('anon')), time: timeAgo(n.ts) });
+        }
+      }
+    }
+  }
 
   function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
   function rotationFor(id){ let h=0; for(let i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))%1000; } return ((h%7)-3); }
@@ -428,13 +596,13 @@
   function timeAgo(ts){
     const diff = Date.now() - ts;
     const mins = Math.floor(diff / 60000);
-    if(mins < 1) return 'agora mesmo';
-    if(mins < 60) return `há ${mins}min`;
+    if(mins < 1) return t('time_just_now');
+    if(mins < 60) return t('time_min', { n: mins });
     const hours = Math.floor(mins / 60);
-    if(hours < 24) return `há ${hours}h`;
+    if(hours < 24) return t('time_hour', { n: hours });
     const days = Math.floor(hours / 24);
-    if(days < 30) return `há ${days}d`;
-    return `há ${Math.floor(days/30)}mês(es)`;
+    if(days < 30) return t('time_day', { n: days });
+    return t('time_month', { n: Math.floor(days/30) });
   }
 
   function animateCounter(el, target){
@@ -482,40 +650,75 @@
     }catch(e){ console.error(e); return null; }
   }
 
+  function getSortedNotes(rawNotes){
+    let items = [...rawNotes];
+    if(currentSort === 'reads'){
+      items.sort((a,b) => ((b.readers||[]).length - (a.readers||[]).length) || (b.ts - a.ts));
+    } else if(currentSort === 'comments'){
+      items.sort((a,b) => ((b.comments||[]).length - (a.comments||[]).length) || (b.ts - a.ts));
+    } else if(currentSort === 'random'){
+      items.sort((a,b) => {
+        if(!randomSeedMap[a.id]) randomSeedMap[a.id] = Math.random();
+        if(!randomSeedMap[b.id]) randomSeedMap[b.id] = Math.random();
+        return randomSeedMap[a.id] - randomSeedMap[b.id];
+      });
+    } else {
+      // 'recent' default
+      items.sort((a,b) => b.ts - a.ts);
+    }
+    return items;
+  }
+
   function renderGallery(data){
     if(data === null){
-      galleryGrid.innerHTML = '<p class="empty-msg">não consegui carregar as notas do mural.</p>';
+      galleryGrid.innerHTML = `<p class="empty-msg">${escapeHtml(t('empty_error'))}</p>`;
       animateCounter(statNotes, 0);
       animateCounter(statReaders, 0);
       return;
     }
-    if(!data.length){
-      galleryGrid.innerHTML = '<p class="empty-msg">nenhuma nota encontrada.</p>';
+    
+    const q = (searchInput.value || '').trim().toLowerCase();
+    let filtered = data;
+    if(q){
+      filtered = data.filter(n =>
+        (n.text || '').toLowerCase().includes(q) ||
+        (n.author || '').toLowerCase().includes(q)
+      );
+    }
+
+    if(!filtered.length){
+      galleryGrid.innerHTML = `<p class="empty-msg">${escapeHtml(t('empty_none'))}</p>`;
       animateCounter(statNotes, 0);
       animateCounter(statReaders, 0);
       return;
     }
 
-    const sorted = [...data].sort((a,b) => b.ts - a.ts);
+    const sorted = getSortedNotes(filtered);
     galleryGrid.innerHTML = '';
 
     let totalReaders = 0;
-    sorted.forEach((note, idx) => {
+    data.forEach(note => {
       totalReaders += (note.readers || []).length;
+    });
+
+    const readUnit = currentLang === 'en' ? 'R' : 'L';
+
+    sorted.forEach((note, idx) => {
+      const readersCount = (note.readers || []).length;
       const commentsCount = (note.comments || []).length;
       const card = document.createElement('div');
       card.className = 'gallery-card';
       card.style.background = uniqueColorForNote(note.id);
       const rot = rotationFor(note.id);
       card.style.setProperty('--card-rot', rot + 'deg');
-      card.style.animationDelay = (idx * 0.03) + 's';
+      card.style.animationDelay = (idx * 0.02) + 's';
 
       card.innerHTML = `
-        <button class="gc-share" title="copiar link com preview de imagem">🔗</button>
+        <button class="gc-share" title="${escapeHtml(t('copy_link'))}">🔗</button>
         <div class="gc-text">${escapeHtml(note.text)}</div>
         <div class="gc-footer">
-          <span>${escapeHtml(note.author || 'anónimo')}</span>
-          <span>${(note.readers||[]).length} L · ${commentsCount} 💬</span>
+          <span>${escapeHtml(note.author || t('anon'))}</span>
+          <span>${readersCount} ${readUnit} · ${commentsCount} 💬</span>
         </div>
       `;
 
@@ -534,7 +737,7 @@
       galleryGrid.appendChild(card);
     });
 
-    animateCounter(statNotes, sorted.length);
+    animateCounter(statNotes, data.length);
     animateCounter(statReaders, totalReaders);
   }
 
@@ -549,8 +752,9 @@
   function renderComments(note){
     const comments = note.comments || [];
     modalCommentsCount.textContent = comments.length;
+    document.querySelector('.comments-title').innerHTML = t('responses', { count: comments.length });
 
-    const vName = viewerName || loadViewerName() || 'anónimo';
+    const vName = viewerName || loadViewerName() || t('anon');
     const vInitial = vName.charAt(0).toUpperCase();
     const vAvatar = document.getElementById('viewer-avatar');
     if(vAvatar){
@@ -559,11 +763,11 @@
     }
 
     if(!comments.length){
-      modalCommentsList.innerHTML = '<p style="font-family:\'IBM Plex Mono\', monospace; font-size:0.8rem; color:var(--muted-invert); margin:6px 0 12px;">ainda sem respostas — sê a primeira pessoa a responder.</p>';
+      modalCommentsList.innerHTML = `<p style="font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--muted-invert); margin:6px 0 12px;">${escapeHtml(t('no_comments'))}</p>`;
       return;
     }
     modalCommentsList.innerHTML = comments.map(c => {
-      const authorName = c.author || 'anónimo';
+      const authorName = c.author || t('anon');
       const initial = authorName.charAt(0).toUpperCase();
       const avatarBg = uniqueColorForNote(c.id || authorName);
       return `
@@ -576,7 +780,7 @@
             </div>
             <div class="fb-meta">
               <span class="fb-time">${timeAgo(c.ts)}</span>
-              <button class="fb-like" onclick="this.classList.toggle('liked'); this.textContent = this.classList.contains('liked') ? 'Gostei ♥' : 'Gostar';">Gostar</button>
+              <button class="fb-like" onclick="this.classList.toggle('liked'); this.textContent = this.classList.contains('liked') ? '${escapeHtml(t('liked'))}' : '${escapeHtml(t('like'))}';">${escapeHtml(t('like'))}</button>
             </div>
           </div>
         </div>
@@ -589,18 +793,18 @@
     if(!note) return;
     currentNoteId = id;
     modalQuote.textContent = note.text;
-    modalAuthor.textContent = `deixado por ${note.author || 'anónimo'} · ${timeAgo(note.ts)}`;
+    modalAuthor.textContent = t('by_author', { author: escapeHtml(note.author || t('anon')), time: timeAgo(note.ts) });
     modalBackdrop.classList.add('open');
     renderReaders(note);
     renderComments(note);
     commentTextInput.value = '';
     setHash(id);
 
-    modalShare.textContent = '🔗 copiar link com imagem';
+    modalShare.textContent = t('copy_link');
     modalShare.classList.remove('copied');
 
     if(!skipRead){
-      const readerName = viewerName || 'anónimo';
+      const readerName = viewerName || t('anon');
       note.readers = note.readers || [];
       if(!note.readers.includes(readerName)){
         note.readers.push(readerName);
@@ -619,7 +823,7 @@
     if(!note) return;
 
     postCommentBtn.disabled = true;
-    const comment = await postComment(currentNoteId, text, viewerName || 'anónimo');
+    const comment = await postComment(currentNoteId, text, viewerName || t('anon'));
     postCommentBtn.disabled = false;
 
     if(comment){
@@ -628,9 +832,9 @@
       renderComments(note);
       renderGallery(notes);
       commentTextInput.value = '';
-      showToast('resposta enviada ✓');
+      showToast(t('toast_comment_ok'));
     } else {
-      showToast('erro ao enviar resposta');
+      showToast(t('toast_comment_err'));
     }
   }
 
@@ -647,14 +851,15 @@
 
   function renderReaders(note){
     const readers = note.readers || [];
-    if(!readers.length){ modalReaders.innerHTML = '<span>ainda ninguém — és a primeira pessoa a ler</span>'; return; }
+    document.querySelector('.readers-title').textContent = t('who_read');
+    if(!readers.length){ modalReaders.innerHTML = `<span>${escapeHtml(t('no_readers'))}</span>`; return; }
     modalReaders.innerHTML = readers.map(r => `<span>${escapeHtml(r)}</span>`).join('');
   }
 
   function copyToClipboard(text){
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(() => {
-        showToast('link com preview de imagem copiado ✓');
+        showToast(t('toast_copied'));
       }).catch(() => fallbackCopy(text));
     } else {
       fallbackCopy(text);
@@ -665,7 +870,7 @@
     const ta = document.createElement('textarea');
     ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); showToast('link copiado ✓'); }catch(e){}
+    try{ document.execCommand('copy'); showToast(t('toast_copied')); }catch(e){}
     document.body.removeChild(ta);
   }
 
@@ -673,7 +878,7 @@
     if(!currentNoteId) return;
     const url = getShareUrl(currentNoteId);
     copyToClipboard(url);
-    modalShare.innerHTML = '✓ link copiado!';
+    modalShare.innerHTML = t('link_copied');
     modalShare.classList.add('copied');
   });
 
@@ -681,16 +886,26 @@
   modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
 
   searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    if(!q){
+    renderGallery(notes);
+  });
+
+  // Sort chips handling
+  document.querySelectorAll('.sort-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentSort = chip.getAttribute('data-sort');
+      if(currentSort === 'random'){
+        randomSeedMap = {}; // reshuffle on random click
+      }
       renderGallery(notes);
-      return;
-    }
-    const filtered = notes.filter(n =>
-      (n.text || '').toLowerCase().includes(q) ||
-      (n.author || '').toLowerCase().includes(q)
-    );
-    renderGallery(filtered);
+    });
+  });
+
+  // Language toggle handling
+  langBtn.addEventListener('click', () => {
+    const nextLang = currentLang === 'pt' ? 'en' : 'pt';
+    applyLanguage(nextLang);
   });
 
   document.addEventListener('keydown', (e) => {
@@ -717,7 +932,10 @@
   }
 
   (async function init(){
+    const savedLang = localStorage.getItem(LANG_KEY) || (navigator.language.startsWith('pt') ? 'pt' : 'en');
+    currentLang = savedLang;
     viewerName = loadViewerName();
+    applyLanguage(currentLang);
     notes = await loadNotes();
     renderGallery(notes);
     await handleDeepLink();
