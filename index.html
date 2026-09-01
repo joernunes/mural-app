@@ -453,7 +453,7 @@
   </div>
 </section>
 
-<section class="section-light" id="precos">
+<!-- <section class="section-light" id="precos">
   <div class="wrap">
     <span class="kicker">preços simples, sem letras pequenas</span>
     <h2 style="font-size:2rem;">um plano para cada mural</h2>
@@ -478,7 +478,7 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 <footer>um placar aberto para quem ainda gosta de deixar um rasto</footer>
 
@@ -496,23 +496,7 @@
   </div>
 </div>
 
-<!-- Full-screen gallery overlay -->
-<div id="gallery-overlay" class="gallery-overlay">
-  <div class="gallery-header">
-    <div class="gallery-header-left">
-      <span class="gallery-title">mural</span>
-      <div class="gallery-stats">
-        <span><span class="stat-val" id="gallery-count-notes">0</span>notas</span>
-        <span><span class="stat-val" id="gallery-count-readers">0</span>leituras</span>
-      </div>
-    </div>
-    <input id="gallery-search" class="gallery-search" type="text" placeholder="pesquisar notas ou autores...">
-    <button id="gallery-close" class="gallery-close-btn">×</button>
-  </div>
-  <div class="gallery-body" id="gallery-body">
-    <div class="gallery-grid" id="gallery-grid"></div>
-  </div>
-</div>
+
 
 <!-- Toast -->
 <div id="toast" class="toast"></div>
@@ -708,11 +692,7 @@
   function closeModal(){
     modalBackdrop.classList.remove('open');
     currentNoteId = null;
-    if(galleryOverlay.classList.contains('open')){
-      history.replaceState(null, '', '#galeria');
-    } else {
-      setHash(null);
-    }
+    setHash(null);
   }
 
   function renderReaders(note){
@@ -751,110 +731,9 @@
   modalClose.addEventListener('click', closeModal);
   modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
 
-  // --- Gallery ---
-  async function openGallery(skipHashUpdate){
-    if(!skipHashUpdate && window.location.hash !== '#galeria'){
-      window.location.hash = '#galeria';
-    }
-    galleryOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    gallerySearch.value = '';
-    if(!notes || !notes.length){
-      notes = await loadNotes();
-    }
-    renderGallery(notes);
-  }
-
-  function closeGallery(){
-    galleryOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-    if(window.location.hash === '#galeria'){
-      history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-  }
-
-  function renderGallery(data){
-    if(!data || !data.length){
-      galleryGrid.innerHTML = '<div class="gallery-empty">nenhuma nota encontrada.</div>';
-      animateCounter(galleryCountNotes, 0);
-      animateCounter(galleryCountReaders, 0);
-      return;
-    }
-
-    const sorted = [...data].sort((a,b) => b.ts - a.ts);
-    galleryGrid.innerHTML = '';
-
-    let totalReaders = 0;
-    sorted.forEach((note, idx) => {
-      totalReaders += (note.readers || []).length;
-      const card = document.createElement('div');
-      card.className = 'gallery-card';
-      card.style.background = uniqueColorForNote(note.id);
-      const rot = rotationFor(note.id);
-      card.style.setProperty('--card-rot', rot + 'deg');
-      card.style.animationDelay = (idx * 0.04) + 's';
-
-      card.innerHTML = `
-        <button class="gc-share" title="copiar link com preview de imagem">🔗</button>
-        <div class="gc-text">${escapeHtml(note.text)}</div>
-        <div class="gc-footer">
-          <span>${escapeHtml(note.author || 'anónimo')}</span>
-          <span>${(note.readers||[]).length} leitura(s) · ${timeAgo(note.ts)}</span>
-        </div>
-      `;
-
-      // Click card → open modal
-      card.addEventListener('click', (e) => {
-        if(e.target.closest('.gc-share')) return;
-        openNote(note.id);
-      });
-
-      // Share button on card
-      const shareBtn = card.querySelector('.gc-share');
-      shareBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const url = getShareUrl(note.id);
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          navigator.clipboard.writeText(url).then(() => {
-            showToast('link com preview de imagem copiado ✓');
-          });
-        } else {
-          fallbackCopy(url);
-        }
-      });
-
-      galleryGrid.appendChild(card);
-    });
-
-    animateCounter(galleryCountNotes, sorted.length);
-    animateCounter(galleryCountReaders, totalReaders);
-  }
-
-  // Gallery search
-  gallerySearch.addEventListener('input', () => {
-    const q = gallerySearch.value.trim().toLowerCase();
-    if(!q){
-      renderGallery(notes);
-      return;
-    }
-    const filtered = notes.filter(n =>
-      (n.text || '').toLowerCase().includes(q) ||
-      (n.author || '').toLowerCase().includes(q)
-    );
-    renderGallery(filtered);
-  });
-
-  openGalleryBtn.addEventListener('click', openGallery);
-  galleryClose.addEventListener('click', closeGallery);
-
-  // Escape key closes gallery or modal
   document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape'){
-      if(modalBackdrop.classList.contains('open')){
-        closeModal();
-      } else if(galleryOverlay.classList.contains('open')){
-        closeGallery();
-      }
+    if(e.key === 'Escape' && modalBackdrop.classList.contains('open')){
+      closeModal();
     }
   });
 
@@ -895,7 +774,7 @@
   async function handleDeepLink(){
     const hash = window.location.hash;
     if(hash === '#galeria'){
-      await openGallery(true);
+      window.location.href = 'galeria.html';
       return;
     }
     const noteId = getHashNoteId();
@@ -978,14 +857,13 @@
   window.addEventListener('hashchange', () => {
     const hash = window.location.hash;
     if(hash === '#galeria'){
-      openGallery(true);
+      window.location.href = 'galeria.html';
     } else {
       const noteId = getHashNoteId();
       if(noteId){
         openNote(noteId, true);
       } else {
         closeModal();
-        closeGallery();
       }
     }
   });
