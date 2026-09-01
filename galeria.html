@@ -224,18 +224,63 @@
   }
   .btn-share:hover{ background: rgba(198,241,53,0.15); border-color: var(--lime); color: var(--lime); }
   .btn-share.copied{ background: rgba(198,241,53,0.2); border-color: var(--lime); color: var(--lime); }
-  .comments-section{ margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
-  .comments-title{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; color: var(--lime); margin-bottom:12px; }
-  .comments-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; max-height:220px; overflow-y:auto; }
-  .comment-item{ background: rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:0.9rem; }
-  .comment-meta{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color: var(--muted-invert); margin-top:4px; display:flex; justify-content:space-between; }
-  .comment-composer{ display:flex; gap:8px; align-items:center; }
-  .comment-field{ flex:1; font-family:'Space Grotesk', sans-serif; font-size:0.9rem; background: rgba(255,255,255,0.06); border:1px solid var(--line); border-radius:999px; padding:9px 16px; color: var(--paper-invert); }
-  .comment-field::placeholder{ color: var(--muted-invert); }
-  .comment-field:focus{ outline:none; border-color: var(--lime); background: rgba(255,255,255,0.09); }
-  .btn-comment{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.85rem; background: var(--lime); color: var(--ink); border:none; border-radius:999px; padding:9px 18px; cursor:pointer; transition: transform 0.15s ease; }
-  .btn-comment:hover{ transform: translateY(-1px); }
-  .btn-comment:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  /* Facebook-style Comments Section */
+  .comments-section{ margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
+  .comments-title{ font-family:'Space Grotesk', sans-serif; font-size:0.9rem; color: var(--paper-invert); margin-bottom:16px; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .comments-title span{ color: var(--lime); }
+  .comments-list{ display:flex; flex-direction:column; gap:14px; margin-bottom:18px; max-height:260px; overflow-y:auto; padding-right:4px; }
+  .comments-list::-webkit-scrollbar{ width:4px; }
+  .comments-list::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.15); border-radius:2px; }
+
+  /* Facebook Comment Row */
+  .fb-comment{ display:flex; gap:10px; align-items:flex-start; }
+  .fb-avatar{
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:0.85rem;
+    color: #17131f; background: var(--lime); text-transform:uppercase; user-select:none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .fb-comment-main{ display:flex; flex-direction:column; flex:1; max-width: calc(100% - 44px); }
+  .fb-comment-bubble{
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px; padding: 10px 14px;
+    display: inline-block; align-self: flex-start;
+    max-width: 100%; word-break: break-word;
+  }
+  .fb-author{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:0.85rem; color: #fff; margin-bottom: 2px; display:block; }
+  .fb-text{ font-family:'Space Grotesk', sans-serif; font-size:0.9rem; color: var(--paper-invert); line-height:1.4; white-space:pre-wrap; }
+  .fb-meta{
+    display:flex; gap:12px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+    color: var(--muted-invert); margin-top:4px; padding-left:12px; align-items:center;
+  }
+  .fb-meta span.fb-time{ opacity:0.8; }
+  .fb-meta button.fb-like{
+    background:none; border:none; color: var(--muted-invert); font-family:inherit;
+    font-size:inherit; cursor:pointer; padding:0; transition: color 0.15s;
+  }
+  .fb-meta button.fb-like:hover, .fb-meta button.fb-like.liked{ color: var(--lime); font-weight:600; }
+
+  /* Facebook Composer */
+  .fb-composer{ display:flex; gap:10px; align-items:center; margin-top:12px; }
+  .fb-composer-field-wrap{ position:relative; flex:1; display:flex; align-items:center; }
+  .fb-composer-field{
+    width:100%; font-family:'Space Grotesk', sans-serif; font-size:0.9rem;
+    background: rgba(255,255,255,0.07); border:1px solid var(--line);
+    border-radius:20px; padding:10px 44px 10px 16px; color: var(--paper-invert);
+    transition: all 0.2s ease;
+  }
+  .fb-composer-field::placeholder{ color: var(--muted-invert); }
+  .fb-composer-field:focus{ outline:none; border-color: var(--lime); background: rgba(255,255,255,0.12); }
+  .fb-send-btn{
+    position:absolute; right:6px; background: var(--lime); color: var(--ink);
+    border:none; border-radius:50%; width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; cursor:pointer; font-weight:bold; transition: transform 0.15s ease, opacity 0.15s;
+  }
+  .fb-send-btn:hover{ transform: scale(1.08); }
+  .fb-send-btn:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
 
   /* Toast */
   .toast{
@@ -309,11 +354,14 @@
       <div id="modal-readers" class="readers-list"></div>
       
       <div class="comments-section">
-        <div class="comments-title">respostas (<span id="modal-comments-count">0</span>):</div>
+        <div class="comments-title">💬 Respostas (<span id="modal-comments-count">0</span>)</div>
         <div id="modal-comments-list" class="comments-list"></div>
-        <div class="comment-composer">
-          <input id="comment-text-input" class="comment-field" type="text" maxlength="300" placeholder="escreve uma resposta...">
-          <button id="post-comment-btn" class="btn-comment">responder ↵</button>
+        <div class="fb-composer">
+          <div class="fb-avatar" id="viewer-avatar">?</div>
+          <div class="fb-composer-field-wrap">
+            <input id="comment-text-input" class="fb-composer-field" type="text" maxlength="300" placeholder="Escreve uma resposta...">
+            <button id="post-comment-btn" class="fb-send-btn" title="Enviar">➔</button>
+          </div>
         </div>
       </div>
 
@@ -502,19 +550,39 @@
   function renderComments(note){
     const comments = note.comments || [];
     modalCommentsCount.textContent = comments.length;
+
+    const vName = viewerName || loadViewerName() || 'anónimo';
+    const vInitial = vName.charAt(0).toUpperCase();
+    const vAvatar = document.getElementById('viewer-avatar');
+    if(vAvatar){
+      vAvatar.textContent = vInitial;
+      vAvatar.style.background = uniqueColorForNote(vName);
+    }
+
     if(!comments.length){
-      modalCommentsList.innerHTML = '<p style="font-family:\'IBM Plex Mono\', monospace; font-size:0.8rem; color:var(--muted-invert);">ainda sem respostas — sê a primeira pessoa a responder.</p>';
+      modalCommentsList.innerHTML = '<p style="font-family:\'IBM Plex Mono\', monospace; font-size:0.8rem; color:var(--muted-invert); margin:6px 0 12px;">ainda sem respostas — sê a primeira pessoa a responder.</p>';
       return;
     }
-    modalCommentsList.innerHTML = comments.map(c => `
-      <div class="comment-item">
-        <div>${escapeHtml(c.text)}</div>
-        <div class="comment-meta">
-          <span>— ${escapeHtml(c.author || 'anónimo')}</span>
-          <span>${timeAgo(c.ts)}</span>
+    modalCommentsList.innerHTML = comments.map(c => {
+      const authorName = c.author || 'anónimo';
+      const initial = authorName.charAt(0).toUpperCase();
+      const avatarBg = uniqueColorForNote(c.id || authorName);
+      return `
+        <div class="fb-comment">
+          <div class="fb-avatar" style="background:${avatarBg}">${escapeHtml(initial)}</div>
+          <div class="fb-comment-main">
+            <div class="fb-comment-bubble">
+              <span class="fb-author">${escapeHtml(authorName)}</span>
+              <div class="fb-text">${escapeHtml(c.text)}</div>
+            </div>
+            <div class="fb-meta">
+              <span class="fb-time">${timeAgo(c.ts)}</span>
+              <button class="fb-like" onclick="this.classList.toggle('liked'); this.textContent = this.classList.contains('liked') ? 'Gostei ♥' : 'Gostar';">Gostar</button>
+            </div>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   async function openNote(id, skipRead){
